@@ -72,7 +72,7 @@ CREATE TABLE VM (
     NAME VARCHAR(30) NOT NULL,
     BOOT_DISK VARCHAR(30) NOT NULL DEFAULT 'Ubuntu-18.04',
     STATUS VARCHAR(30) NOT NULL DEFAULT 'Stopped',
-    PREEPTIBILITY BOOLEAN DEFAULT FALSE,
+    PREEMPTIBILITY BOOLEAN DEFAULT FALSE,
     INTERNAL_IP CIDR NOT NULL,
     EXTERNAL_IP CIDR UNIQUE,
     HOST_NAME VARCHAR(30) NOT NULL,
@@ -100,10 +100,10 @@ CREATE TABLE USER_ (
 CREATE TABLE PROJECT(
     PROJECT_ID CHAR(12) PRIMARY KEY,
     QUOTAS LIMIT_QUOTAS NOT NULL DEFAULT (
-        (5, (0,0,0,0,0), (0,0,0,0,0), (100,200,200), (5,3,5,1,0), (5,3,5,1,0)),
-        (5, (0,0,0,0,0), (0,0,0,0,0), (100,200,200), (5,3,5,1,0), (5,3,5,1,0)),
-        (5, (0,0,0,0,0), (0,0,0,0,0), (100,200,200), (5,3,5,1,0), (5,3,5,1,0)),
-        (5, (0,0,0,0,0), (0,0,0,0,0), (100,200,200), (5,3,5,1,0), (5,3,5,1,0)))
+        (5, (1,0,0,0,0), (0,0,0,0,0), (100,200,200), (5,3,5,1,1), (5,3,5,1,0)),
+        (5, (0,0,0,0,0), (0,1,1,1,1), (100,200,200), (5,3,5,1,0), (5,3,5,1,0)),
+        (5, (1,0,0,0,0), (0,0,0,0,0), (100,200,200), (5,3,5,1,1), (5,3,5,1,0)),
+        (5, (0,0,0,0,0), (0,1,1,1,1), (100,200,200), (5,3,5,1,0), (5,3,5,1,0)))
 );
 
 CREATE TABLE ZONE(
