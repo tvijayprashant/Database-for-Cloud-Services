@@ -35,8 +35,10 @@ DECLARE
     d_success int;
     d_user_project int;
     d_vmid char(10);
+    
 BEGIN 
     d_success:=0;
+    d_vmid:='0000000000';
     select CHECK_PROJECT_QUOTA(PREEMPTIBILITY,ZONE_NAME_,PROJECT_ID_,GPU_,DISK_,MACHINE) into d_quota_flag;
     select COUNT(*) into d_user_project from WORKED_ON where WORKED_ON.PROJECT_ID = PROJECT_ID_ and WORKED_ON.USER_ID = USER_ID_;
     if (d_quota_flag=1 and d_user_project>=1) THEN
@@ -783,7 +785,7 @@ BEGIN
     ELSE
         raise notice 'ERROR : Quota Limit Exceeded for Project: % in zone: %. Please request for LIMIT increase and try again.',PROJECT_ID_,ZONE_NAME_;
     END IF;
-    RETURN d_success;
+    RETURN d_vmid;
 END;
 $$;
 

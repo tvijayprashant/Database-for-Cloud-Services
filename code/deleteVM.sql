@@ -115,9 +115,9 @@ BEGIN
 
         if (d_zone ='us-central-a') THEN
             UPDATE PROJECT set 
-                quotas.Z1.DISK.HDD = (d_DISK).HDD - (((quotas).Z1).DISK).HDD,
-                quotas.Z1.DISK.SSD = (d_DISK).SSD - (((quotas).Z1).DISK).SSD,
-                quotas.Z1.DISK.BALANCED = (d_DISK).BALANCED - (((quotas).Z1).DISK).BALANCED;
+                quotas.Z1.DISK.HDD = (d_DISK).HDD + (((quotas).Z1).DISK).HDD,
+                quotas.Z1.DISK.SSD = (d_DISK).SSD + (((quotas).Z1).DISK).SSD,
+                quotas.Z1.DISK.BALANCED = (d_DISK).BALANCED + (((quotas).Z1).DISK).BALANCED;
 
 
             if (d_PREEMPT = TRUE) THEN
@@ -148,16 +148,158 @@ BEGIN
                     quotas.Z1.GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4 + (((quotas).Z1).GPU).NVIDIA_TESLA_P4,
                     quotas.Z1.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4 + (((quotas).Z1).GPU).NVIDIA_TESLA_T4;
 
-                if (MACHINE='N1') THEN
+                if (d_MACHINE='N1') THEN
                     UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.N1 = (((quotas).Z1).MACHINE_FAMILY).N1 + 1;
-                elseif (MACHINE='N2') THEN
+                elseif (d_MACHINE='N2') THEN
                     UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.N2 = (((quotas).Z1).MACHINE_FAMILY).N2 + 1;
-                elseif (MACHINE='EC2') THEN
+                elseif (d_MACHINE='EC2') THEN
                     UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.EC2 = (((quotas).Z1).MACHINE_FAMILY).EC2 + 1;
-                elseif (MACHINE='C2') THEN
+                elseif (d_MACHINE='C2') THEN
                     UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.C2 = (((quotas).Z1).MACHINE_FAMILY).C2 + 1;
-                elseif (MACHINE='A2') THEN
+                elseif (d_MACHINE='A2') THEN
                     UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.A2 = (((quotas).Z1).MACHINE_FAMILY).A2 + 1;
+                END IF;
+            END IF;
+
+        elseif (d_zone ='us-central-b') THEN
+            UPDATE PROJECT set 
+                quotas.Z2.DISK.HDD = (d_DISK).HDD + (((quotas).Z2).DISK).HDD,
+                quotas.Z2.DISK.SSD = (d_DISK).SSD + (((quotas).Z2).DISK).SSD,
+                quotas.Z2.DISK.BALANCED = (d_DISK).BALANCED + (((quotas).Z2).DISK).BALANCED;
+
+
+            if (d_PREEMPT = TRUE) THEN
+                UPDATE PROJECT set 
+                    quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100 + (((quotas).Z2).GPU_PREMPT).NVIDIA_TESLA_A100,
+                    quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100 + (((quotas).Z2).GPU_PREMPT).NVIDIA_TESLA_V100,
+                    quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80 + (((quotas).Z2).GPU_PREMPT).NVIDIA_TESLA_K80,
+                    quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4 + (((quotas).Z2).GPU_PREMPT).NVIDIA_TESLA_P4,
+                    quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4 + (((quotas).Z2).GPU_PREMPT).NVIDIA_TESLA_T4;
+
+                if (d_MACHINE='N1') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.N1 = (((quotas).Z2).MACHINE_FAMILY_PREMPT).N1 + 1;
+                elseif (d_MACHINE='N2') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.N2 = (((quotas).Z2).MACHINE_FAMILY_PREMPT).N2 + 1;
+                elseif (d_MACHINE='EC2') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.EC2 = (((quotas).Z2).MACHINE_FAMILY_PREMPT).EC2 + 1;
+                elseif (d_MACHINE='C2') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.C2 = (((quotas).Z2).MACHINE_FAMILY_PREMPT).C2 + 1;
+                elseif (d_MACHINE='A2') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.A2 = (((quotas).Z2).MACHINE_FAMILY_PREMPT).A2 + 1;
+                END IF;
+                
+            ELSE
+                UPDATE PROJECT set 
+                    quotas.Z2.GPU.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100 + (((quotas).Z2).GPU).NVIDIA_TESLA_A100,
+                    quotas.Z2.GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100 + (((quotas).Z2).GPU).NVIDIA_TESLA_V100,
+                    quotas.Z2.GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80 + (((quotas).Z2).GPU).NVIDIA_TESLA_K80,
+                    quotas.Z2.GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4 + (((quotas).Z2).GPU).NVIDIA_TESLA_P4,
+                    quotas.Z2.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4 + (((quotas).Z2).GPU).NVIDIA_TESLA_T4;
+
+                if (d_MACHINE='N1') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.N1 = (((quotas).Z2).MACHINE_FAMILY).N1 + 1;
+                elseif (d_MACHINE='N2') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.N2 = (((quotas).Z2).MACHINE_FAMILY).N2 + 1;
+                elseif (d_MACHINE='EC2') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.EC2 = (((quotas).Z2).MACHINE_FAMILY).EC2 + 1;
+                elseif (d_MACHINE='C2') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.C2 = (((quotas).Z2).MACHINE_FAMILY).C2 + 1;
+                elseif (d_MACHINE='A2') THEN
+                    UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.A2 = (((quotas).Z2).MACHINE_FAMILY).A2 + 1;
+                END IF;
+            END IF;
+        elseif (d_zone ='eu-east-a') THEN
+            UPDATE PROJECT set 
+                quotas.Z3.DISK.HDD = (d_DISK).HDD + (((quotas).Z3).DISK).HDD,
+                quotas.Z3.DISK.SSD = (d_DISK).SSD + (((quotas).Z3).DISK).SSD,
+                quotas.Z3.DISK.BALANCED = (d_DISK).BALANCED + (((quotas).Z3).DISK).BALANCED;
+
+
+            if (d_PREEMPT = TRUE) THEN
+                UPDATE PROJECT set 
+                    quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100 + (((quotas).Z3).GPU_PREMPT).NVIDIA_TESLA_A100,
+                    quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100 + (((quotas).Z3).GPU_PREMPT).NVIDIA_TESLA_V100,
+                    quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80 + (((quotas).Z3).GPU_PREMPT).NVIDIA_TESLA_K80,
+                    quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4 + (((quotas).Z3).GPU_PREMPT).NVIDIA_TESLA_P4,
+                    quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4 + (((quotas).Z3).GPU_PREMPT).NVIDIA_TESLA_T4;
+
+                if (d_MACHINE='N1') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.N1 = (((quotas).Z3).MACHINE_FAMILY_PREMPT).N1 + 1;
+                elseif (d_MACHINE='N2') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.N2 = (((quotas).Z3).MACHINE_FAMILY_PREMPT).N2 + 1;
+                elseif (d_MACHINE='EC2') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.EC2 = (((quotas).Z3).MACHINE_FAMILY_PREMPT).EC2 + 1;
+                elseif (d_MACHINE='C2') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.C2 = (((quotas).Z3).MACHINE_FAMILY_PREMPT).C2 + 1;
+                elseif (d_MACHINE='A2') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.A2 = (((quotas).Z3).MACHINE_FAMILY_PREMPT).A2 + 1;
+                END IF;
+                
+            ELSE
+                UPDATE PROJECT set 
+                    quotas.Z3.GPU.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100 + (((quotas).Z3).GPU).NVIDIA_TESLA_A100,
+                    quotas.Z3.GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100 + (((quotas).Z3).GPU).NVIDIA_TESLA_V100,
+                    quotas.Z3.GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80 + (((quotas).Z3).GPU).NVIDIA_TESLA_K80,
+                    quotas.Z3.GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4 + (((quotas).Z3).GPU).NVIDIA_TESLA_P4,
+                    quotas.Z3.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4 + (((quotas).Z3).GPU).NVIDIA_TESLA_T4;
+
+                if (d_MACHINE='N1') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.N1 = (((quotas).Z3).MACHINE_FAMILY).N1 + 1;
+                elseif (d_MACHINE='N2') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.N2 = (((quotas).Z3).MACHINE_FAMILY).N2 + 1;
+                elseif (d_MACHINE='EC2') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.EC2 = (((quotas).Z3).MACHINE_FAMILY).EC2 + 1;
+                elseif (d_MACHINE='C2') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.C2 = (((quotas).Z3).MACHINE_FAMILY).C2 + 1;
+                elseif (d_MACHINE='A2') THEN
+                    UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.A2 = (((quotas).Z3).MACHINE_FAMILY).A2 + 1;
+                END IF;
+            END IF;
+        elseif (d_zone ='eu-west-b') THEN
+            UPDATE PROJECT set 
+                quotas.Z4.DISK.HDD = (d_DISK).HDD + (((quotas).Z4).DISK).HDD,
+                quotas.Z4.DISK.SSD = (d_DISK).SSD + (((quotas).Z4).DISK).SSD,
+                quotas.Z4.DISK.BALANCED = (d_DISK).BALANCED + (((quotas).Z4).DISK).BALANCED;
+
+
+            if (d_PREEMPT = TRUE) THEN
+                UPDATE PROJECT set 
+                    quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100 + (((quotas).Z4).GPU_PREMPT).NVIDIA_TESLA_A100,
+                    quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100 + (((quotas).Z4).GPU_PREMPT).NVIDIA_TESLA_V100,
+                    quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80 + (((quotas).Z4).GPU_PREMPT).NVIDIA_TESLA_K80,
+                    quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4 + (((quotas).Z4).GPU_PREMPT).NVIDIA_TESLA_P4,
+                    quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4 + (((quotas).Z4).GPU_PREMPT).NVIDIA_TESLA_T4;
+
+                if (d_MACHINE='N1') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.N1 = (((quotas).Z4).MACHINE_FAMILY_PREMPT).N1 + 1;
+                elseif (d_MACHINE='N2') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.N2 = (((quotas).Z4).MACHINE_FAMILY_PREMPT).N2 + 1;
+                elseif (d_MACHINE='EC2') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.EC2 = (((quotas).Z4).MACHINE_FAMILY_PREMPT).EC2 + 1;
+                elseif (d_MACHINE='C2') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.C2 = (((quotas).Z4).MACHINE_FAMILY_PREMPT).C2 + 1;
+                elseif (d_MACHINE='A2') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.A2 = (((quotas).Z4).MACHINE_FAMILY_PREMPT).A2 + 1;
+                END IF;
+                
+            ELSE
+                UPDATE PROJECT set 
+                    quotas.Z4.GPU.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100 + (((quotas).Z4).GPU).NVIDIA_TESLA_A100,
+                    quotas.Z4.GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100 + (((quotas).Z4).GPU).NVIDIA_TESLA_V100,
+                    quotas.Z4.GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80 + (((quotas).Z4).GPU).NVIDIA_TESLA_K80,
+                    quotas.Z4.GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4 + (((quotas).Z4).GPU).NVIDIA_TESLA_P4,
+                    quotas.Z4.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4 + (((quotas).Z4).GPU).NVIDIA_TESLA_T4;
+
+                if (d_MACHINE='N1') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.N1 = (((quotas).Z4).MACHINE_FAMILY).N1 + 1;
+                elseif (d_MACHINE='N2') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.N2 = (((quotas).Z4).MACHINE_FAMILY).N2 + 1;
+                elseif (d_MACHINE='EC2') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.EC2 = (((quotas).Z4).MACHINE_FAMILY).EC2 + 1;
+                elseif (d_MACHINE='C2') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.C2 = (((quotas).Z4).MACHINE_FAMILY).C2 + 1;
+                elseif (d_MACHINE='A2') THEN
+                    UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.A2 = (((quotas).Z4).MACHINE_FAMILY).A2 + 1;
                 END IF;
             END IF;
         END IF;

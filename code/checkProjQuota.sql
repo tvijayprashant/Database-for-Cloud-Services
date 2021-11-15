@@ -95,7 +95,224 @@ BEGIN
                 END IF;
             END IF;
         END IF;
+    elseif (ZONE_NAME_='us-central-b') THEN
+        select ((quotas).Z2).NO_VMS into d_zone_vms from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_; 
+        select ((quotas).Z2).DISK.HDD into d_DISK.HDD from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+        select ((quotas).Z2).DISK.SSD into d_DISK.SSD from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+        select ((quotas).Z2).DISK.BALANCED into d_DISK.BALANCED from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+        if (PREEMPTIBILITY = TRUE) THEN
+            select ((quotas).Z2).GPU_PREMPT.NVIDIA_TESLA_A100 into d_GPU.NVIDIA_TESLA_A100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).GPU_PREMPT.NVIDIA_TESLA_V100 into d_GPU.NVIDIA_TESLA_V100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).GPU_PREMPT.NVIDIA_TESLA_K80 into d_GPU.NVIDIA_TESLA_K80 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).GPU_PREMPT.NVIDIA_TESLA_T4 into d_GPU.NVIDIA_TESLA_T4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).GPU_PREMPT.NVIDIA_TESLA_P4 into d_GPU.NVIDIA_TESLA_P4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+            select ((quotas).Z2).MACHINE_FAMILY_PREMPT.A2 into d_MACHINE.A2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).MACHINE_FAMILY_PREMPT.N2 into d_MACHINE.N2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).MACHINE_FAMILY_PREMPT.N1 into d_MACHINE.N1 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).MACHINE_FAMILY_PREMPT.C2 into d_MACHINE.C2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).MACHINE_FAMILY_PREMPT.EC2 into d_MACHINE.EC2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+            if ( d_VM_number < d_zone_vms) THEN
+                if ((GPU_).NVIDIA_TESLA_A100 <= (d_GPU).NVIDIA_TESLA_A100 and
+                    (GPU_).NVIDIA_TESLA_V100 <= (d_GPU).NVIDIA_TESLA_V100 and
+                    (GPU_).NVIDIA_TESLA_K80 <= (d_GPU).NVIDIA_TESLA_K80 and
+                    (GPU_).NVIDIA_TESLA_T4 <= (d_GPU).NVIDIA_TESLA_T4 and
+                    (GPU_).NVIDIA_TESLA_P4 <= (d_GPU).NVIDIA_TESLA_P4) THEN
+                        if ((MACHINE = 'N1' and (d_MACHINE).N1 > 0) or
+                            (MACHINE = 'N2' and (d_MACHINE).N2 > 0) or
+                            (MACHINE = 'EC2' and (d_MACHINE).EC2 > 0) or
+                            (MACHINE = 'C2' and (d_MACHINE).C2 > 0) or
+                            (MACHINE = 'A2' and ((d_MACHINE).A2 > 0 and (GPU_).NVIDIA_TESLA_A100 <> 0))) THEN 
+                                if (((DISK_).HDD <= (d_DISK).HDD) and
+                                    ((DISK_).SSD <= (d_DISK).SSD) and
+                                    ((DISK_).BALANCED <= (d_DISK).BALANCED)) THEN
+                                        quota_flag:=1;
+                                END IF;
+                        END IF;
+                END IF;
+            END IF;
+
+        ELSE
+            select ((quotas).Z2).GPU.NVIDIA_TESLA_A100 into d_GPU.NVIDIA_TESLA_A100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).GPU.NVIDIA_TESLA_V100 into d_GPU.NVIDIA_TESLA_V100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).GPU.NVIDIA_TESLA_K80 into d_GPU.NVIDIA_TESLA_K80 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).GPU.NVIDIA_TESLA_T4 into d_GPU.NVIDIA_TESLA_T4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).GPU.NVIDIA_TESLA_P4 into d_GPU.NVIDIA_TESLA_P4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+
+            select ((quotas).Z2).MACHINE_FAMILY.A2 into d_MACHINE.A2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).MACHINE_FAMILY.N2 into d_MACHINE.N2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).MACHINE_FAMILY.N1 into d_MACHINE.N1 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).MACHINE_FAMILY.C2 into d_MACHINE.C2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z2).MACHINE_FAMILY.EC2 into d_MACHINE.EC2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            if ( d_VM_number < d_zone_vms) THEN
+                if ((GPU_).NVIDIA_TESLA_A100 <= (d_GPU).NVIDIA_TESLA_A100 and 
+                    (GPU_).NVIDIA_TESLA_V100 <= (d_GPU).NVIDIA_TESLA_V100 and 
+                    (GPU_).NVIDIA_TESLA_K80 <= (d_GPU).NVIDIA_TESLA_K80 and 
+                    (GPU_).NVIDIA_TESLA_T4 <= (d_GPU).NVIDIA_TESLA_T4 and 
+                    (GPU_).NVIDIA_TESLA_P4 <= (d_GPU).NVIDIA_TESLA_P4) THEN
+                        if ((MACHINE = 'N1' and (d_MACHINE).N1 > 0) or 
+                            (MACHINE = 'N2' and (d_MACHINE).N2 > 0) or 
+                            (MACHINE = 'EC2' and (d_MACHINE).EC2 > 0) or 
+                            (MACHINE = 'C2' and (d_MACHINE).C2 > 0) or 
+                            (MACHINE = 'A2' and ((d_MACHINE).A2 > 0 and (GPU_).NVIDIA_TESLA_A100 <> 0))) THEN 
+                                if (((DISK_).HDD <= (d_DISK).HDD) or 
+                                    ((DISK_).SSD <= (d_DISK).SSD) or 
+                                    ((DISK_).BALANCED <= (d_DISK).BALANCED)) THEN
+                                        quota_flag:=1;
+                                END IF;
+                        END IF;
+                END IF;
+            END IF;
+        END IF;
+    elseif (ZONE_NAME_='eu-east-a') THEN
+        select ((quotas).Z3).NO_VMS into d_zone_vms from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_; 
+        select ((quotas).Z3).DISK.HDD into d_DISK.HDD from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+        select ((quotas).Z3).DISK.SSD into d_DISK.SSD from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+        select ((quotas).Z3).DISK.BALANCED into d_DISK.BALANCED from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+        if (PREEMPTIBILITY = TRUE) THEN
+            select ((quotas).Z3).GPU_PREMPT.NVIDIA_TESLA_A100 into d_GPU.NVIDIA_TESLA_A100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).GPU_PREMPT.NVIDIA_TESLA_V100 into d_GPU.NVIDIA_TESLA_V100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).GPU_PREMPT.NVIDIA_TESLA_K80 into d_GPU.NVIDIA_TESLA_K80 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).GPU_PREMPT.NVIDIA_TESLA_T4 into d_GPU.NVIDIA_TESLA_T4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).GPU_PREMPT.NVIDIA_TESLA_P4 into d_GPU.NVIDIA_TESLA_P4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+            select ((quotas).Z3).MACHINE_FAMILY_PREMPT.A2 into d_MACHINE.A2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).MACHINE_FAMILY_PREMPT.N2 into d_MACHINE.N2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).MACHINE_FAMILY_PREMPT.N1 into d_MACHINE.N1 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).MACHINE_FAMILY_PREMPT.C2 into d_MACHINE.C2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).MACHINE_FAMILY_PREMPT.EC2 into d_MACHINE.EC2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+            if ( d_VM_number < d_zone_vms) THEN
+                if ((GPU_).NVIDIA_TESLA_A100 <= (d_GPU).NVIDIA_TESLA_A100 and
+                    (GPU_).NVIDIA_TESLA_V100 <= (d_GPU).NVIDIA_TESLA_V100 and
+                    (GPU_).NVIDIA_TESLA_K80 <= (d_GPU).NVIDIA_TESLA_K80 and
+                    (GPU_).NVIDIA_TESLA_T4 <= (d_GPU).NVIDIA_TESLA_T4 and
+                    (GPU_).NVIDIA_TESLA_P4 <= (d_GPU).NVIDIA_TESLA_P4) THEN
+                        if ((MACHINE = 'N1' and (d_MACHINE).N1 > 0) or
+                            (MACHINE = 'N2' and (d_MACHINE).N2 > 0) or
+                            (MACHINE = 'EC2' and (d_MACHINE).EC2 > 0) or
+                            (MACHINE = 'C2' and (d_MACHINE).C2 > 0) or
+                            (MACHINE = 'A2' and ((d_MACHINE).A2 > 0 and (GPU_).NVIDIA_TESLA_A100 <> 0))) THEN 
+                                if (((DISK_).HDD <= (d_DISK).HDD) and
+                                    ((DISK_).SSD <= (d_DISK).SSD) and
+                                    ((DISK_).BALANCED <= (d_DISK).BALANCED)) THEN
+                                        quota_flag:=1;
+                                END IF;
+                        END IF;
+                END IF;
+            END IF;
+
+        ELSE
+            select ((quotas).Z3).GPU.NVIDIA_TESLA_A100 into d_GPU.NVIDIA_TESLA_A100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).GPU.NVIDIA_TESLA_V100 into d_GPU.NVIDIA_TESLA_V100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).GPU.NVIDIA_TESLA_K80 into d_GPU.NVIDIA_TESLA_K80 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).GPU.NVIDIA_TESLA_T4 into d_GPU.NVIDIA_TESLA_T4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).GPU.NVIDIA_TESLA_P4 into d_GPU.NVIDIA_TESLA_P4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+
+            select ((quotas).Z3).MACHINE_FAMILY.A2 into d_MACHINE.A2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).MACHINE_FAMILY.N2 into d_MACHINE.N2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).MACHINE_FAMILY.N1 into d_MACHINE.N1 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).MACHINE_FAMILY.C2 into d_MACHINE.C2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z3).MACHINE_FAMILY.EC2 into d_MACHINE.EC2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            if ( d_VM_number < d_zone_vms) THEN
+                if ((GPU_).NVIDIA_TESLA_A100 <= (d_GPU).NVIDIA_TESLA_A100 and 
+                    (GPU_).NVIDIA_TESLA_V100 <= (d_GPU).NVIDIA_TESLA_V100 and 
+                    (GPU_).NVIDIA_TESLA_K80 <= (d_GPU).NVIDIA_TESLA_K80 and 
+                    (GPU_).NVIDIA_TESLA_T4 <= (d_GPU).NVIDIA_TESLA_T4 and 
+                    (GPU_).NVIDIA_TESLA_P4 <= (d_GPU).NVIDIA_TESLA_P4) THEN
+                        if ((MACHINE = 'N1' and (d_MACHINE).N1 > 0) or 
+                            (MACHINE = 'N2' and (d_MACHINE).N2 > 0) or 
+                            (MACHINE = 'EC2' and (d_MACHINE).EC2 > 0) or 
+                            (MACHINE = 'C2' and (d_MACHINE).C2 > 0) or 
+                            (MACHINE = 'A2' and ((d_MACHINE).A2 > 0 and (GPU_).NVIDIA_TESLA_A100 <> 0))) THEN 
+                                if (((DISK_).HDD <= (d_DISK).HDD) or 
+                                    ((DISK_).SSD <= (d_DISK).SSD) or 
+                                    ((DISK_).BALANCED <= (d_DISK).BALANCED)) THEN
+                                        quota_flag:=1;
+                                END IF;
+                        END IF;
+                END IF;
+            END IF;
+        END IF;
+    elseif (ZONE_NAME_='eu-west-b') THEN
+        select ((quotas).Z4).NO_VMS into d_zone_vms from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_; 
+        select ((quotas).Z4).DISK.HDD into d_DISK.HDD from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+        select ((quotas).Z4).DISK.SSD into d_DISK.SSD from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+        select ((quotas).Z4).DISK.BALANCED into d_DISK.BALANCED from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+        if (PREEMPTIBILITY = TRUE) THEN
+            select ((quotas).Z4).GPU_PREMPT.NVIDIA_TESLA_A100 into d_GPU.NVIDIA_TESLA_A100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).GPU_PREMPT.NVIDIA_TESLA_V100 into d_GPU.NVIDIA_TESLA_V100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).GPU_PREMPT.NVIDIA_TESLA_K80 into d_GPU.NVIDIA_TESLA_K80 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).GPU_PREMPT.NVIDIA_TESLA_T4 into d_GPU.NVIDIA_TESLA_T4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).GPU_PREMPT.NVIDIA_TESLA_P4 into d_GPU.NVIDIA_TESLA_P4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+            select ((quotas).Z4).MACHINE_FAMILY_PREMPT.A2 into d_MACHINE.A2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).MACHINE_FAMILY_PREMPT.N2 into d_MACHINE.N2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).MACHINE_FAMILY_PREMPT.N1 into d_MACHINE.N1 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).MACHINE_FAMILY_PREMPT.C2 into d_MACHINE.C2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).MACHINE_FAMILY_PREMPT.EC2 into d_MACHINE.EC2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+            if ( d_VM_number < d_zone_vms) THEN
+                if ((GPU_).NVIDIA_TESLA_A100 <= (d_GPU).NVIDIA_TESLA_A100 and
+                    (GPU_).NVIDIA_TESLA_V100 <= (d_GPU).NVIDIA_TESLA_V100 and
+                    (GPU_).NVIDIA_TESLA_K80 <= (d_GPU).NVIDIA_TESLA_K80 and
+                    (GPU_).NVIDIA_TESLA_T4 <= (d_GPU).NVIDIA_TESLA_T4 and
+                    (GPU_).NVIDIA_TESLA_P4 <= (d_GPU).NVIDIA_TESLA_P4) THEN
+                        if ((MACHINE = 'N1' and (d_MACHINE).N1 > 0) or
+                            (MACHINE = 'N2' and (d_MACHINE).N2 > 0) or
+                            (MACHINE = 'EC2' and (d_MACHINE).EC2 > 0) or
+                            (MACHINE = 'C2' and (d_MACHINE).C2 > 0) or
+                            (MACHINE = 'A2' and ((d_MACHINE).A2 > 0 and (GPU_).NVIDIA_TESLA_A100 <> 0))) THEN 
+                                if (((DISK_).HDD <= (d_DISK).HDD) and
+                                    ((DISK_).SSD <= (d_DISK).SSD) and
+                                    ((DISK_).BALANCED <= (d_DISK).BALANCED)) THEN
+                                        quota_flag:=1;
+                                END IF;
+                        END IF;
+                END IF;
+            END IF;
+
+        ELSE
+            select ((quotas).Z4).GPU.NVIDIA_TESLA_A100 into d_GPU.NVIDIA_TESLA_A100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).GPU.NVIDIA_TESLA_V100 into d_GPU.NVIDIA_TESLA_V100 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).GPU.NVIDIA_TESLA_K80 into d_GPU.NVIDIA_TESLA_K80 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).GPU.NVIDIA_TESLA_T4 into d_GPU.NVIDIA_TESLA_T4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).GPU.NVIDIA_TESLA_P4 into d_GPU.NVIDIA_TESLA_P4 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+
+
+            select ((quotas).Z4).MACHINE_FAMILY.A2 into d_MACHINE.A2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).MACHINE_FAMILY.N2 into d_MACHINE.N2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).MACHINE_FAMILY.N1 into d_MACHINE.N1 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).MACHINE_FAMILY.C2 into d_MACHINE.C2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            select ((quotas).Z4).MACHINE_FAMILY.EC2 into d_MACHINE.EC2 from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
+            if ( d_VM_number < d_zone_vms) THEN
+                if ((GPU_).NVIDIA_TESLA_A100 <= (d_GPU).NVIDIA_TESLA_A100 and 
+                    (GPU_).NVIDIA_TESLA_V100 <= (d_GPU).NVIDIA_TESLA_V100 and 
+                    (GPU_).NVIDIA_TESLA_K80 <= (d_GPU).NVIDIA_TESLA_K80 and 
+                    (GPU_).NVIDIA_TESLA_T4 <= (d_GPU).NVIDIA_TESLA_T4 and 
+                    (GPU_).NVIDIA_TESLA_P4 <= (d_GPU).NVIDIA_TESLA_P4) THEN
+                        if ((MACHINE = 'N1' and (d_MACHINE).N1 > 0) or 
+                            (MACHINE = 'N2' and (d_MACHINE).N2 > 0) or 
+                            (MACHINE = 'EC2' and (d_MACHINE).EC2 > 0) or 
+                            (MACHINE = 'C2' and (d_MACHINE).C2 > 0) or 
+                            (MACHINE = 'A2' and ((d_MACHINE).A2 > 0 and (GPU_).NVIDIA_TESLA_A100 <> 0))) THEN 
+                                if (((DISK_).HDD <= (d_DISK).HDD) or 
+                                    ((DISK_).SSD <= (d_DISK).SSD) or 
+                                    ((DISK_).BALANCED <= (d_DISK).BALANCED)) THEN
+                                        quota_flag:=1;
+                                END IF;
+                        END IF;
+                END IF;
+            END IF;
+        END IF;
     END IF;
+
     RETURN quota_flag;
 END;
 $$;

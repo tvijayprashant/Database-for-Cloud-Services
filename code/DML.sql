@@ -2,6 +2,7 @@
 
 INSERT INTO USER_ VALUES(
         'USR000001',
+        FALSE,
         'John Smith',
         'johnsmith012@gmail.com',
         crypt('JSmth.012', gen_salt('bf')),
@@ -10,6 +11,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000002',
+        FALSE,
         'George Russel',
         'georger1224@gmail.com',
         crypt('williamsgr', gen_salt('bf')),
@@ -18,6 +20,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000003',
+        FALSE,
         'Soumith Chintala',
         'soumith_chintala@facebook.com',
         crypt('pytorch', gen_salt('bf')),
@@ -26,6 +29,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000004',
+        FALSE,
         'Sundar Menor',
         'menor.sundar01@google.com',
         crypt('gcp', gen_salt('bf')),
@@ -34,6 +38,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000005',
+        FALSE,
         'Clement Mihailescu',
         'clement.mihail@algoexpert.io',
         crypt('algoexpert', gen_salt('bf')),
@@ -42,6 +47,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000006',
+        FALSE,
         'Andrej Karpathy',
         'karpathy@gmail.com',
         crypt('tesla', gen_salt('bf')),
@@ -50,6 +56,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000007',
+        FALSE,
         'Jermy Lefebrve',
         'jermy.lfb@gmail.com',
         crypt('Financial Education', gen_salt('bf')),
@@ -58,6 +65,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000008',
+        FALSE,
         'Toto Wolf',
         'toto.wolf@mercedes.com',
         crypt('suzie', gen_salt('bf')),
@@ -207,3 +215,6 @@ INSERT INTO ACCESS VALUES
     (
         'VM_0000004', 'USR000003'
     );
+
+-- $2a$06$CFSzZe6HcTj76eGH7tka5uJ12jD6t5pMzDRc.vDmunQ2x9uHyEHma
+-- $2a$06$Z7P.IZj5fCAU.M3TP8YhCuAtWwDRjuLoNKu/BNAijMjZE1xNLRbMu
