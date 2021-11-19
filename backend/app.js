@@ -1,13 +1,17 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const client = require("./database");
+const runtime = require("./runtime");
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./"));
 
-app.get("/", function (req, res) {
+app.get("/", async function (req, res) {
+	client.connect();
+	await runtime.Random_insert(2);
+	// client.end();
 	res.send("Hollow Worlds!");
 });
 
@@ -77,12 +81,12 @@ app.get("/:projectID/create_vm", function (req, res) {
 		host_name: "microsoft",
 		network_tag: null,
 		subnet: null,
-		zone_name: "us-central-b",
+		zone_name: "eu-east-a",
 		projectID: "cdsaml-32445",
 		ram: 32,
-		gpu: "(0,0,0,0,0)",
+		gpu: "(0,1,0,0,0)",
 		disk: "(1,0,0)",
-		machine: "EC2",
+		machine: "N1",
 		date: "2021-11-10 10:00:00",
 	};
 
