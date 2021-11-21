@@ -1,25 +1,27 @@
 import React from 'react';
 import './loginstyle.css';
 import axios from 'axios';
-
+import {Link} from 'react-router-dom';
 function Login(){
     const [msg,setMsg] = React.useState({})
+    const [auth,setAuth] = React.useState(false)
+
     const handleSubmit= (response)=>{
-        // const formData = new FormData(response.currentTarget);
         response.preventDefault();
-        // let json = Object.fromEntries(formData.entries())
         let data = [{email: response.currentTarget[0].value, password: response.currentTarget[1].value}]
-            axios({
-              method: "POST",
-              url: "http://localhost:8008/login",
-              data: data
-            })
-              .then((response) => {
-                setMsg(response.data);
-              })
-              .catch((error) => {
-                console.log(error);
-              });
+        setAuth(true)
+            // axios({
+            //   method: "POST",
+            //   url: "http://localhost:8008/login",
+            //   data: data
+            // })
+            //   .then((response) => {
+            //     setMsg(response.data);
+            //   })
+            //   .catch((error) => {
+            //       console.log(error);
+            //     });
+            //     console.log(msg);
           };
     
         
@@ -46,7 +48,9 @@ function Login(){
                                     <input id="customCheck1" type="checkbox" className="custom-control-input"/>
                                     <label for="customCheck1" className="custom-control-label">Remember password</label>
                                 </div>
-                                <button type="submit" className="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm">Sign in</button>
+                                <button type="submit" className="btn btn-primary btn-block text-uppercase mb-2 rounded-pill shadow-sm">{auth && <Link to={{ pathname:"/dashboard",
+                    state:{name:"eafafdfga",password: "afdafgda"}
+                  }} />}Sign in</button>
                                
                             </form>
                         </div>
@@ -56,7 +60,6 @@ function Login(){
         </div>
     </div>
 </div>
-// </Container>
     )
 }
 

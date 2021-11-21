@@ -1,5 +1,6 @@
 import React from "react";
 import { Container, Row, Col, Navbar, Nav, NavDropdown, Card, Button,Carousel} from 'react-bootstrap';
+import { useLocation,Link } from "react-router-dom";
 import { Line } from 'react-chartjs-2';
 
 const data = {
@@ -26,9 +27,14 @@ const options = {
 const projId = [{id:132435465},{id:132423425},{id:34546765},{id:98765432},{curr:5674839210,username:"sdfgfh",userid:765432342}];
 const vm = [{name:"asfdgsfg"},{name:"sadfasfg"},{name:"Agnihotri"},{name:"Netradham"},{name:"SunnyDay"}]
 
-export const User_DashBoard = () =>(
+function User_DashBoard(props){
+    const location = useLocation();
+    const state = location.state;
+
+    return(
     <Container fluid>
             <Navbar bg="dark" variant="dark" sticky="top">
+            {console.log(state)}
                 <Navbar.Brand href="/">GCP</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
@@ -118,5 +124,7 @@ export const User_DashBoard = () =>(
         </Row>
         </Container>
     </Row>
-    </Container>
-)
+    </Container>)
+}
+
+export default User_DashBoard;
