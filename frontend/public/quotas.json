@@ -1,0 +1,16 @@
+[
+    {
+        "projId": [{"id":132435465},{"id":132423425},{"id":34546765},{"id":98765432},{"curr":5674839210,"username":"sdfgfh","userid":765432342}],
+        "quotas":[
+            {"nvm":5, "disk":[2,3,4], "gpuP":[1,1,1,1,1], "gpu":[1,1,1,1,1],"mfP":[2,2,2,2,2], "mf":[2,2,2,2,2]},
+            {"nvm":15, "disk":[2,3,5], "gpuP":[1,2,3,4,5], "gpu":[1,1,2,1,1],"mfP":[2,0,2,2,2], "mf":[2,2,2,4,2]},
+            {"nvm":52, "disk":[7,3,6], "gpuP":[1,1,0,10,0], "gpu":[1,2,1,1,1],"mfP":[2,2,0,2,2], "mf":[8,2,2,2,2]},
+            {"nvm":2, "disk":[4,3,4], "gpuP":[1,0,1,0,1], "gpu":[1,1,11,3,1],"mfP":[2,2,0,20,2], "mf":[2,8,2,7,2]}
+            ],
+        "vm":[{"name":"asdlfjns"},{"name":"knvbafkhv"},{"name":"kjhbasjhfb"},{"name":"kmoufns"}],
+        "tableData":[{ "name":"Mark", "zone":"us-central-a", "iIP":"123.234.345.1", "eIP":"322.214.12.12", "status":false},
+            { "name":"Maurya", "zone":"us-central-a", "iIP":"123.234.345.1", "eIP":"322.214.12.12","status":true },
+            { "name":"Mister", "zone":"us-central-a", "iIP":"123.234.345.1", "eIP":"322.214.12.12","status":false },
+            { "name":"Master", "zone":"us-central-a", "iIP":"123.234.345.1", "eIP":"322.214.12.12","status":true }]
+    }
+]

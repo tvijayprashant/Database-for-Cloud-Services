@@ -1,0 +1,13 @@
+.login,
+.image {
+  min-height: 100vh;
+}
+.bg-image {
+  background-image: url('./login.jpeg');
+  background-size: cover;
+  background-position: center center;
+}
+
+.displog{
+  text-align: center;
+}
