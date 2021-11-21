@@ -27,10 +27,10 @@ app.get("/", async function (req, res) {
 
 app.get("/signup", async function (req, res) {
 	req = {
-		name: "Renna Sultana",
-		email: "rennasult@pes.edu",
-		password: "renna@123",
-		payment: "Debit Card",
+		name: "Jawahar",
+		email: "jawahar@pes.edu",
+		password: "jawahar@123",
+		payment: "LOAN",
 	};
 
 	sign_up.connect();
@@ -78,7 +78,7 @@ app.get("/signup", async function (req, res) {
 								);
 
 								sign_up.query(
-									`GRANT SELECT,INSERT,DELETE ON PROJECT TO "${req.email}"`,
+									`GRANT SELECT,INSERT,UPDATE,DELETE ON PROJECT TO "${req.email}"`,
 									(err, permission) => {
 										if (err) {
 											console.log(err);
@@ -104,7 +104,85 @@ app.get("/signup", async function (req, res) {
 								);
 
 								sign_up.query(
-									`insert into user_ values ('${user_id}',${0},'${req.name}','${
+									`GRANT SELECT,INSERT,UPDATE,DELETE ON WORKED_ON TO "${req.email}"`,
+									(err, permission) => {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(
+												`Setting VM permissions for user:"${req.email}"`
+											);
+										}
+									}
+								);
+
+								sign_up.query(
+									`GRANT SELECT,INSERT,UPDATE,DELETE ON ACCESS TO "${req.email}"`,
+									(err, permission) => {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(
+												`Setting VM permissions for user:"${req.email}"`
+											);
+										}
+									}
+								);
+
+								sign_up.query(
+									`GRANT SELECT,INSERT,UPDATE,DELETE ON MONITORS TO "${req.email}"`,
+									(err, permission) => {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(
+												`Setting VM permissions for user:"${req.email}"`
+											);
+										}
+									}
+								);
+
+								sign_up.query(
+									`GRANT SELECT,UPDATE ON HARDWARE TO "${req.email}"`,
+									(err, permission) => {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(
+												`Setting VM permissions for user:"${req.email}"`
+											);
+										}
+									}
+								);
+
+								sign_up.query(
+									`GRANT SELECT,UPDATE ON ZONE TO "${req.email}"`,
+									(err, permission) => {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(
+												`Setting VM permissions for user:"${req.email}"`
+											);
+										}
+									}
+								);
+
+								sign_up.query(
+									`GRANT SELECT,INSERT ON RUNTIME TO "${req.email}"`,
+									(err, permission) => {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(
+												`Setting VM permissions for user:"${req.email}"`
+											);
+										}
+									}
+								);
+
+								sign_up.query(
+									`insert into user_ values ('${user_id}',${1},'${req.name}','${
 										req.email
 									}','${usr_password}',0,'${req.payment}')`,
 									(err, insert) => {
@@ -127,8 +205,8 @@ app.get("/signup", async function (req, res) {
 app.get("/login", function (req, res) {
 	login_user.connect();
 	req = {
-		email: "rennasult@pes.edu",
-		password: "renna@123",
+		email: "jawahar@pes.edu",
+		password: "jawahar@123",
 	};
 	login_user.query(
 		`select count(*) from USER_EMAILS where EMAIL_ID='${req.email}'`,
@@ -155,14 +233,14 @@ app.get("/login", function (req, res) {
 								} else {
 									console.log("User Login failed!");
 									res.json({
-										authenticated: 1,
+										authenticated: 0,
 										message: "Failed to Authenticate due to invalid password.",
 									});
 								}
 							} else {
 								console.log(error);
+								await login.end();
 							}
-							await login.end();
 						}
 					);
 				} else {
@@ -174,16 +252,50 @@ app.get("/login", function (req, res) {
 					authenticated: 0,
 					message: `Failed to Authenticate due to invalid email : ${req.email}.`,
 				});
-				await login_user.end();
+				// await login_user.end();
 			}
 		}
 	);
 });
 
-app.get("/:projectID/create_vm", function (req, res) {
-	client.connect();
+app.get("/project", function (req, res) {
 	req = {
-		userID: "USR000007",
+		name: "cdsaml-12350",
+		email: "jawahar@pes.edu",
+		password: "jawahar@123",
+		userID: "USR000009",
+	};
+	login = create_login_client(req.email, req.password);
+	login.connect();
+	login.query(
+		`insert into project values ('${req.name}')`,
+		async (err, project) => {
+			if (err) {
+				console.log(err);
+			} else {
+				login.query(
+					`insert into worked_on values ('${req.name}','${req.userID}')`,
+					async (err, insert) => {
+						if (err) {
+							console.log(err);
+						} else {
+							res.json({
+								message: "Successfully created project.",
+							});
+						}
+					}
+				);
+			}
+			// await login.end();
+		}
+	);
+});
+
+app.get("/:projectID/create_vm", function (request, res) {
+	req = {
+		userID: "USR000009",
+		email: "jawahar@pes.edu",
+		password: "jawahar@123",
 		name: "chaii",
 		boot_disk: "Ubuntu-20.04",
 		preemptibility: false,
@@ -193,15 +305,18 @@ app.get("/:projectID/create_vm", function (req, res) {
 		network_tag: null,
 		subnet: null,
 		zone_name: "eu-east-a",
-		projectID: "cdsaml-32445",
+		projectID: request.params.projectID,
 		ram: 32,
-		gpu: "(0,1,0,0,0)",
+		gpu: "(0,0,0,0,0)",
 		disk: "(1,0,0)",
-		machine: "N1",
+		machine: "EC2",
 		date: "2021-11-10 10:00:00",
 	};
 
-	client.query(
+	login = create_login_client(req.email, req.password);
+	login.connect();
+
+	login.query(
 		`select create_vm('${req.userID}','${req.name}','${req.boot_disk}','${req.preemptibility}','${req.internal_ip}',${req.external_ip},'${req.host_name}',${req.network_tag},${req.subnet},'${req.zone_name}','${req.projectID}',${req.ram},'${req.gpu}','${req.disk}','${req.machine}','${req.date}')`,
 		async (err, vm) => {
 			if (!err) {
@@ -225,18 +340,21 @@ app.get("/:projectID/create_vm", function (req, res) {
 						"VM could not be created due to some unknown reason. Good Luck!",
 				});
 			}
-			await client.end();
+			await login.end();
 		}
 	);
 });
 
 app.get("/:projectID/delete_vm", function (req, res) {
-	client.connect();
 	req = {
+		email: "jawahar@pes.edu",
 		vm: "VM_0000005",
-		userID: "USR000007",
+		userID: "USR000009",
 	};
-	client.query(
+	login = create_login_client(req.email, req.password);
+	login.connect();
+
+	login.query(
 		`select delete_vm('${req.vm}','${req.userID}')`,
 		async (err, vm) => {
 			if (!err) {
@@ -254,7 +372,7 @@ app.get("/:projectID/delete_vm", function (req, res) {
 					message: "VM cannot be deleted due to unknow reason",
 				});
 			}
-			await client.end();
+			await login.end();
 		}
 	);
 });

@@ -2,7 +2,7 @@
 
 INSERT INTO USER_ VALUES(
         'USR000001',
-        FALSE,
+        1,
         'John Smith',
         'johnsmith012@gmail.com',
         crypt('JSmth.012', gen_salt('bf')),
@@ -11,7 +11,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000002',
-        FALSE,
+        1,
         'George Russel',
         'georger1224@gmail.com',
         crypt('williamsgr', gen_salt('bf')),
@@ -20,7 +20,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000003',
-        FALSE,
+        1,
         'Soumith Chintala',
         'soumith_chintala@facebook.com',
         crypt('pytorch', gen_salt('bf')),
@@ -29,7 +29,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000004',
-        FALSE,
+        1,
         'Sundar Menor',
         'menor.sundar01@google.com',
         crypt('gcp', gen_salt('bf')),
@@ -38,7 +38,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000005',
-        FALSE,
+        1,
         'Clement Mihailescu',
         'clement.mihail@algoexpert.io',
         crypt('algoexpert', gen_salt('bf')),
@@ -47,7 +47,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000006',
-        FALSE,
+        1,
         'Andrej Karpathy',
         'karpathy@gmail.com',
         crypt('tesla', gen_salt('bf')),
@@ -56,7 +56,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000007',
-        FALSE,
+        1,
         'Jermy Lefebrve',
         'jermy.lfb@gmail.com',
         crypt('Financial Education', gen_salt('bf')),
@@ -65,7 +65,7 @@ INSERT INTO USER_ VALUES(
     ),
     (
         'USR000008',
-        FALSE,
+        1,
         'Toto Wolf',
         'toto.wolf@mercedes.com',
         crypt('suzie', gen_salt('bf')),
@@ -166,7 +166,7 @@ INSERT INTO VM VALUES
     ('VM_0000001','imagan', 'Ubuntu-20.04', 'Stopped', TRUE, '10.1.1.0/24', '34.122.7.189', 'vmio-high', NULL, NULL, NULL,'blk1-00001','us-central-a', 'cdsaml-32445', 85,(1,0,0,0,0),(1,0,0),'A2'),
     ('VM_0000002','clara', 'Ubuntu-18.04', 'Stopped', FALSE, '10.1.2.0/24', '34.122.7.185', 'dlink-clas', NULL, NULL, NULL,'blk4-00001','us-central-b', 'pluck-rarity', 32,(0,2,0,0,0),(2,0,0),'N1'),
     ('VM_0000003','maximux', 'Ubuntu-12.04', 'Stopped', TRUE, '10.1.3.0/24', '34.122.7.187', 'tplink-mal', NULL, NULL, NULL,'blk4-00004','eu-west-b', 'tesla-201922', 64,(0,0,0,0,0),(0,1,0),'EC2'),    
-    ('VM_0000004','silo', 'Ubuntu-14.04', 'Stopped', FALSE, '10.1.4.0/24', '34.122.7.183', 'crazy-sweeper', NULL, NULL, NULL,'blk3-00001','eu-east-a', 'facbook-ai20', 16,(0,0,0,0,0),(0,0,1),'N2');   
+    ('VM_0000004','silo', 'Ubuntu-14.04', 'Stopped', FALSE, '10.1.4.0/24', '34.122.7.183', 'crazy-sweeper', NULL, NULL, NULL,'blk1-00001','eu-east-a', 'facbook-ai20', 16,(0,0,0,0,0),(0,0,1),'N2');   
 
 INSERT INTO RUNTIME VALUES
     ('VM_0000001','2021-10-10 00:00:00', 0.40, 0.00, 0.00, 0.00, '5:00:00', '5:00:00'),

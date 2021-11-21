@@ -768,10 +768,86 @@ BEGIN
 
                 INSERT INTO VM values(d_vmid,NAME,BOOT_DISK,'Stopped',PREEMPTIBILITY,INTERNAL_IP,EXTERNAL_IP,HOST_NAME,NETWORK_TAG,SUBNET,NULL,d_rack_id,ZONE_NAME_,PROJECT_ID_,RAM_,GPU_,DISK_,MACHINE);
                 INSERT INTO RUNTIME values(d_vmid,DATE_, 0.00, 0.00, 0.00, 0.00, '00:00:00', '00:00:00');
-                INSERT INTO MONITORS values (DATE_, d_vmid, (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),(0.0,0.0,0.0,0.0,0.0));
+                d_disk_cost:=0;
+                IF (DISK_).HDD > 0 THEN
+                    d_disk_cost:=0.10*(DISK_).HDD;
+                elseif (DISK_).SSD > 0 THEN
+                    d_disk_cost:=0.30*(DISK_).SSD;
+                elseif (DISK_).BALANCED > 0 THEN
+                    d_disk_cost:=0.15*(DISK_).BALANCED;
+                END IF;
+
+                d_ram_cost:= RAM_*0.20;
+                d_cpu_cost:=0;
+                d_gpu_cost:=0;
+
+                IF (PREEMPTIBILITY = TRUE) THEN
+                    IF ((GPU_).NVIDIA_TESLA_A100 > 0) THEN
+                        d_gpu_cost:=1.35;
+                    elseif ((GPU_).NVIDIA_TESLA_V100 > 0) THEN
+                        d_gpu_cost:=0.77;
+                    elseif ((GPU_).NVIDIA_TESLA_T4 > 0) THEN
+                        d_gpu_cost:=0.45;
+                    elseif ((GPU_).NVIDIA_TESLA_P4 > 0) THEN
+                        d_gpu_cost:=0.32;
+                    elseif ((GPU_).NVIDIA_TESLA_K80 > 0) THEN
+                        d_gpu_cost:=0.24;
+                    END IF;
+                    if (MACHINE='N1') THEN
+                        d_cpu_cost:=0.4;
+                    END IF;
+                    if (MACHINE='N2') THEN
+                        d_cpu_cost:=0.3;
+                    END IF;
+                    if (MACHINE='EC2') THEN
+                        d_cpu_cost:=0.2;
+                    END IF;
+                    if (MACHINE='C2') THEN
+                        d_cpu_cost:=0.5;
+                    END IF;
+                    if (MACHINE='A2') THEN
+                        d_cpu_cost:=0.7;
+                    END IF;
+                else
+                    IF ((GPU_).NVIDIA_TESLA_A100 > 0) THEN
+                        d_gpu_cost:=1.35*2;
+                    elseif ((GPU_).NVIDIA_TESLA_V100 > 0) THEN
+                        d_gpu_cost:=0.77*2;
+                    elseif ((GPU_).NVIDIA_TESLA_T4 > 0) THEN
+                        d_gpu_cost:=0.45*2;
+                    elseif ((GPU_).NVIDIA_TESLA_P4 > 0) THEN
+                        d_gpu_cost:=0.32*2;
+                    elseif ((GPU_).NVIDIA_TESLA_K80 > 0) THEN
+                        d_gpu_cost:=0.24*2;
+                    END IF;
+                    if (MACHINE='N1') THEN
+                        d_cpu_cost:=0.4*2;
+                    END IF;
+                    if (MACHINE='N2') THEN
+                        d_cpu_cost:=0.3*2;
+                    END IF;
+                    if (MACHINE='EC2') THEN
+                        d_cpu_cost:=0.2*2;
+                    END IF;
+                    if (MACHINE='C2') THEN
+                        d_cpu_cost:=0.5*2;
+                    END IF;
+                    if (MACHINE='A2') THEN
+                        d_cpu_cost:=0.7*2;
+                    END IF;
+                END IF;
+                d_vm_cost:=d_cpu_cost+d_gpu_cost+d_disk_cost+0.95+d_ram_cost;
+                raise notice 'CPU Cost : $%',d_cpu_cost;
+                raise notice 'GPU Cost : $%',d_gpu_cost;
+                raise notice 'RAM Cost : $%',d_ram_cost;
+                raise notice 'Disk Cost : $%',d_disk_cost;
+                raise notice 'Network Cost : $%',0.95;
+                raise notice 'Total VM Creation Cost : $%',d_vm_cost;
+                INSERT INTO MONITORS values (DATE_, d_vmid, (0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0),(d_cpu_cost,d_gpu_cost,d_disk_cost,0.95,d_ram_cost));
                 raise notice 'Initializing VM Monitoring and Runtime Statistics...';
                 raise notice 'Assigning % to VM %',USER_ID_,NAME;
                 INSERT INTO ACCESS values (d_vmid,USER_ID_);
+                UPDATE USER_ set CREDITS=CREDITS-d_vm_cost where USER_ID=USER_ID_;
                 
             END;
             raise notice 'PASSED : Project: % VM: % has been created in zone: %.',PROJECT_ID_,NAME,ZONE_NAME_;

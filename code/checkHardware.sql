@@ -31,19 +31,20 @@ BEGIN
     d_offset:=0;
     select CHECK_ZONE_QUOTA(ZONE_NAME_,RAM_,GPU_,DISK_,MACHINE) into d_ram_blk;
     if (d_ram_blk not LIKE '0000') THEN
+        raise notice 'executed zone function';
         WHILE (flag1=1) LOOP 
             select HARDWARE.RACK_ID into d_spatial from VM,HARDWARE where VM.PROJECT_ID=PROJECT_ID_ and HARDWARE.ZONE_NAME=ZONE_NAME_ and HARDWARE.RACK_ID LIKE '%' || d_ram_blk || '%' ORDER BY RACK_ID DESC LIMIT 1 OFFSET d_offset;
-            -- select RACK_ID into d_spatial from HARDWARE where HARDWARE.ZONE_NAME = ZONE_NAME_ and HARDWARE.RACK_ID LIKE '%' || d_ram_blk || '%' ORDER BY RACK_ID LIMIT 1 OFFSET d_offset ;
-
             if (d_spatial is NULL) THEN
                 select concat('blk',(substring(d_ram_blk,4)::int)+1) into d_ram_blk;
+                select RACK_ID into d_spatial from HARDWARE where HARDWARE.ZONE_NAME = ZONE_NAME_ and HARDWARE.RACK_ID LIKE '%' || d_ram_blk || '%' ORDER BY RACK_ID LIMIT 1 OFFSET d_offset ;
+                raise notice 'd_ram_blk %', d_ram_blk;
                 d_offset:=0;
                 if (substring(d_ram_blk,4)::int > 4) THEN
                     flag1:=0;
                 END IF;
                 select concat(d_ram_blk,'-',lpad(((select substring(d_spatial,6)::int))::char(5),5,'0')) into d_spatial;
             END IF;
-
+            raise notice 'd_spatial %', d_spatial;
             select (DISK).HDD into d_DISK.HDD from HARDWARE where HARDWARE.RACK_ID = d_spatial and HARDWARE.ZONE_NAME = ZONE_NAME_;
             select (DISK).SSD into d_DISK.SSD from HARDWARE where HARDWARE.RACK_ID = d_spatial and HARDWARE.ZONE_NAME = ZONE_NAME_;
             select (DISK).BALANCED into d_DISK.BALANCED from HARDWARE where HARDWARE.RACK_ID = d_spatial and HARDWARE.ZONE_NAME = ZONE_NAME_;

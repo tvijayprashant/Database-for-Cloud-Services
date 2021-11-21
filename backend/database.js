@@ -72,7 +72,7 @@ login_user.on("end", () => {
 
 login_user.on("notice", (msg) => console.warn("notice:", msg.message));
 
-const create_login_client = (username, passwd) => {
+function create_login_client(username, passwd) {
 	console.log(username);
 	console.log(passwd);
 	const client = new Client({
@@ -93,7 +93,7 @@ const create_login_client = (username, passwd) => {
 	client.on("notice", (msg) => console.warn("notice:", msg.message));
 
 	return client;
-};
+}
 
 exports.create_login_client = create_login_client;
 exports.sign_up = sign_up;
