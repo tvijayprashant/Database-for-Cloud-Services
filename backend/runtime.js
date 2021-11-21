@@ -1,4 +1,4 @@
-const client = require("./database");
+const client = require("./database").rclient;
 const Random_insert = function Random_insert(n) {
 	client.query(`select vm_id from VM where status='Stopped'`, (err, vms) => {
 		if (!err) {

@@ -1,7 +1,8 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const client = require("./database");
+// const client = require("./database");
 const runtime = require("./runtime");
+const { create_login_client, sign_up, login_user } = require("./database");
 const app = express();
 
 app.use(bodyParser.json());
@@ -9,20 +10,128 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./"));
 
 app.get("/", async function (req, res) {
-	client.connect();
-	await runtime.Random_insert(2);
-	// client.end();
-	res.send("Hollow Worlds!");
+	// client = create_login_client("admin_user", "123");
+	// client.connect();
+	// client.query(`select * from project`, async (err, result) => {
+	// 	if (err) {
+	// 		console.log(err);
+	// 	} else {
+	// 		res.json({
+	// 			vm: result.rows[0],
+	// 		});
+	// 	}
+	// 	await client.end();
+	// });
+	res.send("hello world!");
+});
+
+app.get("/signup", async function (req, res) {
+	req = {
+		name: "Renna Sultana",
+		email: "rennasult@pes.edu",
+		password: "renna@123",
+		payment: "Debit Card",
+	};
+
+	sign_up.connect();
+	let user_id = 0;
+	sign_up.query(`select max(user_id) from user_`, (err, user) => {
+		if (err) {
+			console.log(err);
+		} else {
+			console.log(user);
+			let usr = user.rows[0].max;
+			let inc_user_id = 0;
+			inc_user_id = parseInt(usr.substring(3)) + 1;
+			console.log(inc_user_id);
+			inc_user_id = inc_user_id.toString();
+			console.log(inc_user_id);
+			user_id = "USR" + inc_user_id.padStart(6, "0");
+			// await console.log("Hello : %s", user_id);
+			let usr_password = "";
+			sign_up.query(
+				`select crypt('${req.password}',gen_salt('bf'))`,
+				async (err, passwd) => {
+					if (err) {
+						console.log(err);
+					} else {
+						usr_password = passwd.rows[0].crypt;
+					}
+					await console.log(usr_password);
+					sign_up.query(
+						`CREATE USER "${req.email}" WITH PASSWORD '${req.password}'`,
+						(err, db_usr) => {
+							if (err) {
+								console.log(err);
+							} else {
+								sign_up.query(
+									`GRANT SELECT,UPDATE,DELETE ON USER_ TO "${req.email}"`,
+									(err, permission) => {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(
+												`Setting permissions for user:"${req.email}"`
+											);
+										}
+									}
+								);
+
+								sign_up.query(
+									`GRANT SELECT,INSERT,DELETE ON PROJECT TO "${req.email}"`,
+									(err, permission) => {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(
+												`Setting PROJECT permissions for user:"${req.email}"`
+											);
+										}
+									}
+								);
+
+								sign_up.query(
+									`GRANT SELECT,INSERT,UPDATE,DELETE ON VM TO "${req.email}"`,
+									(err, permission) => {
+										if (err) {
+											console.log(err);
+										} else {
+											console.log(
+												`Setting VM permissions for user:"${req.email}"`
+											);
+										}
+									}
+								);
+
+								sign_up.query(
+									`insert into user_ values ('${user_id}',${0},'${req.name}','${
+										req.email
+									}','${usr_password}',0,'${req.payment}')`,
+									(err, insert) => {
+										if (err) {
+											console.log(err);
+										} else {
+										}
+									}
+								);
+								res.send("User has been created!");
+							}
+						}
+					);
+				}
+			);
+		}
+	});
 });
 
 app.get("/login", function (req, res) {
-	client.connect();
+	login_user.connect();
 	req = {
-		email: "jermy.lfb@gmail.com",
-		password: "Financial Education",
+		email: "rennasult@pes.edu",
+		password: "renna@123",
 	};
-	client.query(
-		`select count(*) from USER_ where EMAIL_ID='${req.email}'`,
+	login_user.query(
+		`select count(*) from USER_EMAILS where EMAIL_ID='${req.email}'`,
 		async (err, result) => {
 			if (!err) {
 				// console.log(result.rows[0].count);
@@ -30,8 +139,10 @@ app.get("/login", function (req, res) {
 					console.log("Checking for Password");
 					console.log(req);
 					crypt = `crypt('${req.password}', PASSWD)`;
-					await client.query(
-						`select count(*) from USER_ where EMAIL_ID='${req.email}' and PASSWD=${crypt}`,
+					const login = create_login_client(req.email, req.password);
+					login.connect();
+					await login.query(
+						`select count(email_id) from USER_ where EMAIL_ID='${req.email}' and PASSWD=${crypt}`,
 						async (error, user) => {
 							if (!error) {
 								console.log(user.rows);
@@ -51,7 +162,7 @@ app.get("/login", function (req, res) {
 							} else {
 								console.log(error);
 							}
-							await client.end();
+							await login.end();
 						}
 					);
 				} else {
@@ -63,7 +174,7 @@ app.get("/login", function (req, res) {
 					authenticated: 0,
 					message: `Failed to Authenticate due to invalid email : ${req.email}.`,
 				});
-				await client.end();
+				await login_user.end();
 			}
 		}
 	);
