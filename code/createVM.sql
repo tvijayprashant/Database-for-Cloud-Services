@@ -69,28 +69,28 @@ BEGIN
                 raise notice 'Please wait while we create a new VM Instance ...';
                 UPDATE PROJECT set quotas.Z1.DISK.HDD = (d_DISK).HDD - (DISK_).HDD,
                 quotas.Z1.DISK.SSD = (d_DISK).SSD - (DISK_).SSD,
-                quotas.Z1.DISK.BALANCED = (d_DISK).BALANCED - (DISK_).BALANCED;
+                quotas.Z1.DISK.BALANCED = (d_DISK).BALANCED - (DISK_).BALANCED WHERE PROJECT_ID=PROJECT_ID_;
                 if (PREEMPTIBILITY = TRUE) THEN
                     UPDATE PROJECT set 
                     quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100-(GPU_).NVIDIA_TESLA_A100,
                     quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE PROJECT_ID=PROJECT_ID_;
                     if (MACHINE='N1') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.N1 = (d_MACHINE).N1 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.N1 = (d_MACHINE).N1 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='N2') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.N2 = (d_MACHINE).N2 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.N2 = (d_MACHINE).N2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='EC2') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.EC2 = (d_MACHINE).EC2 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.EC2 = (d_MACHINE).EC2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='C2') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.C2 = (d_MACHINE).C2 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.C2 = (d_MACHINE).C2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='A2') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.A2 = (d_MACHINE).A2 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY_PREMPT.A2 = (d_MACHINE).A2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
 
                 ELSE
@@ -99,22 +99,22 @@ BEGIN
                     quotas.Z1.GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     quotas.Z1.GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     quotas.Z1.GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    quotas.Z1.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    quotas.Z1.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE PROJECT_ID=PROJECT_ID_;
 
                     if (MACHINE='N1') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='N2') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='EC2') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='C2') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='A2') THEN
-                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1;
+                        UPDATE PROJECT set quotas.Z1.MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                 END IF;
 
@@ -144,37 +144,37 @@ BEGIN
                     GPU_AVAILABLE.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     GPU_AVAILABLE.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     GPU_AVAILABLE.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    GPU_AVAILABLE.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    GPU_AVAILABLE.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE ZONE_NAME=ZONE_NAME_;
                 UPDATE ZONE set 
                     DISK_AVAILABLE.HDD=(d_DISK).HDD-(DISK_).HDD,
                     DISK_AVAILABLE.SSD=(d_DISK).SSD-(DISK_).SSD,
-                    DISK_AVAILABLE.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED;
+                    DISK_AVAILABLE.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED WHERE ZONE_NAME=ZONE_NAME_;
 
                 if (MACHINE='N1') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N1 = (d_MACHINE).N1 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N1 = (d_MACHINE).N1 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='N2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N2 = (d_MACHINE).N2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N2 = (d_MACHINE).N2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='EC2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.EC2 = (d_MACHINE).EC2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.EC2 = (d_MACHINE).EC2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='C2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.C2 = (d_MACHINE).C2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.C2 = (d_MACHINE).C2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='A2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.A2 = (d_MACHINE).A2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.A2 = (d_MACHINE).A2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
 
                 select substring(d_rack_id,0,5) into d_blk;
                 if (d_blk LIKE 'blk1') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK1 = (d_RAM).BLK1 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK1 = (d_RAM).BLK1 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk2') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK2 = (d_RAM).BLK2 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK2 = (d_RAM).BLK2 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk3') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK3 = (d_RAM).BLK3 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK3 = (d_RAM).BLK3 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk4') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK4 = (d_RAM).BLK4 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK4 = (d_RAM).BLK4 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 select (DISK).HDD into d_DISK.HDD from HARDWARE where HARDWARE.RACK_ID = d_rack_id and HARDWARE.ZONE_NAME = ZONE_NAME_;
                 select (DISK).SSD into d_DISK.ssd from HARDWARE where HARDWARE.RACK_ID = d_rack_id and HARDWARE.ZONE_NAME = ZONE_NAME_;
@@ -199,24 +199,24 @@ BEGIN
                 UPDATE HARDWARE set 
                     DISK.HDD=(d_DISK).HDD-(DISK_).HDD,
                     DISK.SSD=(d_DISK).SSD-(DISK_).SSD,
-                    DISK.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED;
+                    DISK.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
 
-                UPDATE HARDWARE set RAM = d_RAM_ - RAM_;
+                UPDATE HARDWARE set RAM = d_RAM_ - RAM_ WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 
                 if (MACHINE='N1') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='N2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='EC2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='C2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='A2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
 
                 UPDATE HARDWARE set 
@@ -224,7 +224,7 @@ BEGIN
                     GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
             elseif(ZONE_NAME_ LIKE 'us-central-b') THEN
                 select ((quotas).Z2).DISK.hdd into d_DISK.hdd from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
                 select ((quotas).Z2).DISK.ssd into d_DISK.ssd from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
@@ -245,32 +245,30 @@ BEGIN
                 select ((quotas).Z2).NO_VMS into d_zone_vms from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_; 
 
                 raise notice 'Please wait while we create a new VM Instance ...';
-
                 UPDATE PROJECT set quotas.Z2.DISK.HDD = (d_DISK).HDD - (DISK_).HDD,
                 quotas.Z2.DISK.SSD = (d_DISK).SSD - (DISK_).SSD,
-                quotas.Z2.DISK.BALANCED = (d_DISK).BALANCED - (DISK_).BALANCED;
-
+                quotas.Z2.DISK.BALANCED = (d_DISK).BALANCED - (DISK_).BALANCED WHERE PROJECT_ID=PROJECT_ID_;
                 if (PREEMPTIBILITY = TRUE) THEN
                     UPDATE PROJECT set 
                     quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100-(GPU_).NVIDIA_TESLA_A100,
                     quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    quotas.Z2.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE PROJECT_ID=PROJECT_ID_;
                     if (MACHINE='N1') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.N1 = (d_MACHINE).N1 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.N1 = (d_MACHINE).N1 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='N2') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.N2 = (d_MACHINE).N2 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.N2 = (d_MACHINE).N2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='EC2') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.EC2 = (d_MACHINE).EC2 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.EC2 = (d_MACHINE).EC2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='C2') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.C2 = (d_MACHINE).C2 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.C2 = (d_MACHINE).C2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='A2') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.A2 = (d_MACHINE).A2 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY_PREMPT.A2 = (d_MACHINE).A2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
 
                 ELSE
@@ -279,22 +277,22 @@ BEGIN
                     quotas.Z2.GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     quotas.Z2.GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     quotas.Z2.GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    quotas.Z2.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    quotas.Z2.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE PROJECT_ID=PROJECT_ID_;
 
                     if (MACHINE='N1') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='N2') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='EC2') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='C2') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='A2') THEN
-                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1;
+                        UPDATE PROJECT set quotas.Z2.MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                 END IF;
 
@@ -324,35 +322,37 @@ BEGIN
                     GPU_AVAILABLE.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     GPU_AVAILABLE.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     GPU_AVAILABLE.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    GPU_AVAILABLE.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    GPU_AVAILABLE.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE ZONE_NAME=ZONE_NAME_;
                 UPDATE ZONE set 
                     DISK_AVAILABLE.HDD=(d_DISK).HDD-(DISK_).HDD,
                     DISK_AVAILABLE.SSD=(d_DISK).SSD-(DISK_).SSD,
-                    DISK_AVAILABLE.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED;
+                    DISK_AVAILABLE.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED WHERE ZONE_NAME=ZONE_NAME_;
+
                 if (MACHINE='N1') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N1 = (d_MACHINE).N1 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N1 = (d_MACHINE).N1 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='N2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N2 = (d_MACHINE).N2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N2 = (d_MACHINE).N2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='EC2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.EC2 = (d_MACHINE).EC2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.EC2 = (d_MACHINE).EC2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='C2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.C2 = (d_MACHINE).C2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.C2 = (d_MACHINE).C2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='A2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.A2 = (d_MACHINE).A2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.A2 = (d_MACHINE).A2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
+
                 select substring(d_rack_id,0,5) into d_blk;
                 if (d_blk LIKE 'blk1') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK1 = (d_RAM).BLK1 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK1 = (d_RAM).BLK1 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk2') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK2 = (d_RAM).BLK2 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK2 = (d_RAM).BLK2 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk3') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK3 = (d_RAM).BLK3 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK3 = (d_RAM).BLK3 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk4') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK4 = (d_RAM).BLK4 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK4 = (d_RAM).BLK4 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 select (DISK).HDD into d_DISK.HDD from HARDWARE where HARDWARE.RACK_ID = d_rack_id and HARDWARE.ZONE_NAME = ZONE_NAME_;
                 select (DISK).SSD into d_DISK.ssd from HARDWARE where HARDWARE.RACK_ID = d_rack_id and HARDWARE.ZONE_NAME = ZONE_NAME_;
@@ -377,25 +377,24 @@ BEGIN
                 UPDATE HARDWARE set 
                     DISK.HDD=(d_DISK).HDD-(DISK_).HDD,
                     DISK.SSD=(d_DISK).SSD-(DISK_).SSD,
-                    DISK.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED;
+                    DISK.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
 
-                UPDATE HARDWARE set RAM = d_RAM_ - RAM_;
-
+                UPDATE HARDWARE set RAM = d_RAM_ - RAM_ WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 
                 if (MACHINE='N1') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='N2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='EC2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='C2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='A2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
 
                 UPDATE HARDWARE set 
@@ -403,7 +402,7 @@ BEGIN
                     GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
             elseif(ZONE_NAME_ LIKE 'eu-east-a') THEN
                 select ((quotas).Z3).DISK.hdd into d_DISK.hdd from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
                 select ((quotas).Z3).DISK.ssd into d_DISK.ssd from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
@@ -424,32 +423,30 @@ BEGIN
                 select ((quotas).Z3).NO_VMS into d_zone_vms from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_; 
 
                 raise notice 'Please wait while we create a new VM Instance ...';
-
                 UPDATE PROJECT set quotas.Z3.DISK.HDD = (d_DISK).HDD - (DISK_).HDD,
                 quotas.Z3.DISK.SSD = (d_DISK).SSD - (DISK_).SSD,
-                quotas.Z3.DISK.BALANCED = (d_DISK).BALANCED - (DISK_).BALANCED;
-
+                quotas.Z3.DISK.BALANCED = (d_DISK).BALANCED - (DISK_).BALANCED WHERE PROJECT_ID=PROJECT_ID_;
                 if (PREEMPTIBILITY = TRUE) THEN
                     UPDATE PROJECT set 
                     quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100-(GPU_).NVIDIA_TESLA_A100,
                     quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    quotas.Z3.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE PROJECT_ID=PROJECT_ID_;
                     if (MACHINE='N1') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.N1 = (d_MACHINE).N1 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.N1 = (d_MACHINE).N1 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='N2') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.N2 = (d_MACHINE).N2 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.N2 = (d_MACHINE).N2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='EC2') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.EC2 = (d_MACHINE).EC2 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.EC2 = (d_MACHINE).EC2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='C2') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.C2 = (d_MACHINE).C2 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.C2 = (d_MACHINE).C2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='A2') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.A2 = (d_MACHINE).A2 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY_PREMPT.A2 = (d_MACHINE).A2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
 
                 ELSE
@@ -458,22 +455,22 @@ BEGIN
                     quotas.Z3.GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     quotas.Z3.GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     quotas.Z3.GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    quotas.Z3.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    quotas.Z3.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE PROJECT_ID=PROJECT_ID_;
 
                     if (MACHINE='N1') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='N2') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='EC2') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='C2') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='A2') THEN
-                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1;
+                        UPDATE PROJECT set quotas.Z3.MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                 END IF;
 
@@ -503,36 +500,37 @@ BEGIN
                     GPU_AVAILABLE.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     GPU_AVAILABLE.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     GPU_AVAILABLE.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    GPU_AVAILABLE.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    GPU_AVAILABLE.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE ZONE_NAME=ZONE_NAME_;
                 UPDATE ZONE set 
                     DISK_AVAILABLE.HDD=(d_DISK).HDD-(DISK_).HDD,
                     DISK_AVAILABLE.SSD=(d_DISK).SSD-(DISK_).SSD,
-                    DISK_AVAILABLE.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED;
+                    DISK_AVAILABLE.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED WHERE ZONE_NAME=ZONE_NAME_;
+
                 if (MACHINE='N1') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N1 = (d_MACHINE).N1 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N1 = (d_MACHINE).N1 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='N2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N2 = (d_MACHINE).N2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N2 = (d_MACHINE).N2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='EC2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.EC2 = (d_MACHINE).EC2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.EC2 = (d_MACHINE).EC2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='C2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.C2 = (d_MACHINE).C2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.C2 = (d_MACHINE).C2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='A2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.A2 = (d_MACHINE).A2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.A2 = (d_MACHINE).A2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
 
                 select substring(d_rack_id,0,5) into d_blk;
                 if (d_blk LIKE 'blk1') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK1 = (d_RAM).BLK1 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK1 = (d_RAM).BLK1 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk2') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK2 = (d_RAM).BLK2 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK2 = (d_RAM).BLK2 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk3') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK3 = (d_RAM).BLK3 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK3 = (d_RAM).BLK3 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk4') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK4 = (d_RAM).BLK4 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK4 = (d_RAM).BLK4 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 select (DISK).HDD into d_DISK.HDD from HARDWARE where HARDWARE.RACK_ID = d_rack_id and HARDWARE.ZONE_NAME = ZONE_NAME_;
                 select (DISK).SSD into d_DISK.ssd from HARDWARE where HARDWARE.RACK_ID = d_rack_id and HARDWARE.ZONE_NAME = ZONE_NAME_;
@@ -557,24 +555,24 @@ BEGIN
                 UPDATE HARDWARE set 
                     DISK.HDD=(d_DISK).HDD-(DISK_).HDD,
                     DISK.SSD=(d_DISK).SSD-(DISK_).SSD,
-                    DISK.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED;
+                    DISK.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
 
-                UPDATE HARDWARE set RAM = d_RAM_ - RAM_;
+                UPDATE HARDWARE set RAM = d_RAM_ - RAM_ WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 
                 if (MACHINE='N1') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='N2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='EC2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='C2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='A2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
 
                 UPDATE HARDWARE set 
@@ -582,7 +580,7 @@ BEGIN
                     GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
             elseif(ZONE_NAME_ LIKE 'eu-west-b') THEN
                 select ((quotas).Z4).DISK.hdd into d_DISK.hdd from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
                 select ((quotas).Z4).DISK.ssd into d_DISK.ssd from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_;
@@ -603,32 +601,30 @@ BEGIN
                 select ((quotas).Z4).NO_VMS into d_zone_vms from PROJECT where PROJECT.PROJECT_ID = PROJECT_ID_; 
 
                 raise notice 'Please wait while we create a new VM Instance ...';
-
                 UPDATE PROJECT set quotas.Z4.DISK.HDD = (d_DISK).HDD - (DISK_).HDD,
                 quotas.Z4.DISK.SSD = (d_DISK).SSD - (DISK_).SSD,
-                quotas.Z4.DISK.BALANCED = (d_DISK).BALANCED - (DISK_).BALANCED;
-
+                quotas.Z4.DISK.BALANCED = (d_DISK).BALANCED - (DISK_).BALANCED WHERE PROJECT_ID=PROJECT_ID_;
                 if (PREEMPTIBILITY = TRUE) THEN
                     UPDATE PROJECT set 
                     quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100-(GPU_).NVIDIA_TESLA_A100,
                     quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE PROJECT_ID=PROJECT_ID_;
                     if (MACHINE='N1') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.N1 = (d_MACHINE).N1 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.N1 = (d_MACHINE).N1 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='N2') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.N2 = (d_MACHINE).N2 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.N2 = (d_MACHINE).N2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='EC2') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.EC2 = (d_MACHINE).EC2 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.EC2 = (d_MACHINE).EC2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='C2') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.C2 = (d_MACHINE).C2 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.C2 = (d_MACHINE).C2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='A2') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.A2 = (d_MACHINE).A2 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY_PREMPT.A2 = (d_MACHINE).A2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
 
                 ELSE
@@ -637,22 +633,22 @@ BEGIN
                     quotas.Z4.GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     quotas.Z4.GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     quotas.Z4.GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    quotas.Z4.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    quotas.Z4.GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE PROJECT_ID=PROJECT_ID_;
 
                     if (MACHINE='N1') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='N2') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='EC2') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='C2') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                     if (MACHINE='A2') THEN
-                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1;
+                        UPDATE PROJECT set quotas.Z4.MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1 WHERE PROJECT_ID=PROJECT_ID_;
                     END IF;
                 END IF;
 
@@ -682,35 +678,37 @@ BEGIN
                     GPU_AVAILABLE.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     GPU_AVAILABLE.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     GPU_AVAILABLE.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    GPU_AVAILABLE.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    GPU_AVAILABLE.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE ZONE_NAME=ZONE_NAME_;
                 UPDATE ZONE set 
                     DISK_AVAILABLE.HDD=(d_DISK).HDD-(DISK_).HDD,
                     DISK_AVAILABLE.SSD=(d_DISK).SSD-(DISK_).SSD,
-                    DISK_AVAILABLE.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED;
+                    DISK_AVAILABLE.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED WHERE ZONE_NAME=ZONE_NAME_;
+
                 if (MACHINE='N1') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N1 = (d_MACHINE).N1 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N1 = (d_MACHINE).N1 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='N2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N2 = (d_MACHINE).N2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.N2 = (d_MACHINE).N2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='EC2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.EC2 = (d_MACHINE).EC2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.EC2 = (d_MACHINE).EC2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='C2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.C2 = (d_MACHINE).C2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.C2 = (d_MACHINE).C2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 if (MACHINE='A2') THEN
-                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.A2 = (d_MACHINE).A2 - 1;
+                    UPDATE ZONE set MACHINE_TYPE_AVAILABLE.A2 = (d_MACHINE).A2 - 1 WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
+
                 select substring(d_rack_id,0,5) into d_blk;
                 if (d_blk LIKE 'blk1') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK1 = (d_RAM).BLK1 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK1 = (d_RAM).BLK1 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk2') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK2 = (d_RAM).BLK2 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK2 = (d_RAM).BLK2 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk3') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK3 = (d_RAM).BLK3 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK3 = (d_RAM).BLK3 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 elseif (d_blk LIKE 'blk4') THEN
-                    UPDATE ZONE set RAM_AVAILABLE.BLK4 = (d_RAM).BLK4 - RAM_;
+                    UPDATE ZONE set RAM_AVAILABLE.BLK4 = (d_RAM).BLK4 - RAM_ WHERE ZONE_NAME=ZONE_NAME_;
                 END IF;
                 select (DISK).HDD into d_DISK.HDD from HARDWARE where HARDWARE.RACK_ID = d_rack_id and HARDWARE.ZONE_NAME = ZONE_NAME_;
                 select (DISK).SSD into d_DISK.ssd from HARDWARE where HARDWARE.RACK_ID = d_rack_id and HARDWARE.ZONE_NAME = ZONE_NAME_;
@@ -735,24 +733,24 @@ BEGIN
                 UPDATE HARDWARE set 
                     DISK.HDD=(d_DISK).HDD-(DISK_).HDD,
                     DISK.SSD=(d_DISK).SSD-(DISK_).SSD,
-                    DISK.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED;
+                    DISK.BALANCED=(d_DISK).BALANCED-(DISK_).BALANCED WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
 
-                UPDATE HARDWARE set RAM = d_RAM_ - RAM_;
+                UPDATE HARDWARE set RAM = d_RAM_ - RAM_ WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 
                 if (MACHINE='N1') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.N1 = (d_MACHINE).N1 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='N2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.N2 = (d_MACHINE).N2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='EC2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.EC2 = (d_MACHINE).EC2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='C2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.C2 = (d_MACHINE).C2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
                 if (MACHINE='A2') THEN
-                    UPDATE HARDWARE set MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1;
+                    UPDATE HARDWARE set MACHINE_FAMILY.A2 = (d_MACHINE).A2 - 1 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
                 END IF;
 
                 UPDATE HARDWARE set 
@@ -760,7 +758,7 @@ BEGIN
                     GPU.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU_).NVIDIA_TESLA_V100,
                     GPU.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU_).NVIDIA_TESLA_K80,
                     GPU.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU_).NVIDIA_TESLA_P4,
-                    GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4;
+                    GPU.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU_).NVIDIA_TESLA_T4 WHERE ZONE_NAME=ZONE_NAME_ AND RACK_ID=d_rack_id;
             END IF;
             -- Zone ends
             select VM_ID into d_vmid from VM ORDER BY VM_ID DESC LIMIT 1;
@@ -791,7 +789,7 @@ $$;
 
 -- UPDATE PROJECT set 
 -- quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_A100=(d_GPU).NVIDIA_TESLA_A100-(GPU).NVIDIA_TESLA_A100,
--- quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU).NVIDIA_TESLA_V100,
+-- quotas.Z4.GPU_PREMPT.NVIDIA_TESLA_V100=(d_GPU).NVIDIA_TESLA_V100-(GPU).NVIDIA_TESLA_V100,
 -- quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_K80=(d_GPU).NVIDIA_TESLA_K80-(GPU).NVIDIA_TESLA_K80,
 -- quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_P4=(d_GPU).NVIDIA_TESLA_P4-(GPU).NVIDIA_TESLA_P4,
 -- quotas.Z1.GPU_PREMPT.NVIDIA_TESLA_T4=(d_GPU).NVIDIA_TESLA_T4-(GPU).NVIDIA_TESLA_T4;
