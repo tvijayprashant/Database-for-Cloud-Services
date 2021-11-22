@@ -1,5 +1,5 @@
 import React from 'react'
-import { Container,Navbar,Nav,Row,Col,NavDropdown,Form,Table,Button,Modal } from 'react-bootstrap'
+import { Container,Navbar,Nav,Row,Col,NavDropdown,Form,Table,Button,Modal,Alert } from 'react-bootstrap'
 import axios from 'axios'
 
 function Profile(){
@@ -8,25 +8,45 @@ function Profile(){
     const [projNo,setProjNo] = React.useState(-1);
     const [zone,setZone] = React.useState(0);
     const [isUser,setUser] = React.useState(true);
-    const [quotas,setQuotas] = React.useState([]);
+    const [quota,setQuotas] = React.useState([]);
     const [dataReceived,setDataReceived] = React.useState(false);
+    const [projShow, setProjShow] = React.useState(false);
+    const [vProj,setVP] = React.useState(false);
     
-    const tableData = [{id:12345678},{id:7654321},{id:43489132}]
+    const tableData = [{id:12345678,vm:[[{name:"sdfsgva",cost:123},{name:"fghd",cost:542}]],total:444},
+                        {id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542},{name:"sdfsgdfsfva",cost:13}],total:444},
+                        {id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542}],total:444}]
+
+    const handleDelete = (e)=>{
+        console.log(e.target.id)
+    }
+
     const renderTable = (row,index) => {
         return(
-            <tr key={index}>
-              <th>{row.id}</th>
-              <td><Button variant="primary" id={index} onClick={(e)=> {setModalShow(true);setProjNo(e.target.id);}}>{isUser?"View":"Edit"}</Button></td>
-            {console.log(quotas)}
-            </tr>
+            // <tr>
+            <React.Fragment>
+                <tr key={index} className="align-items-center align-content-center">
+                <th rowSpan={row.vm.length+1}>{row.id}<br/><br/>
+                Total Cost: {row.total}<br/><br/>
+                <Button variant={isUser?"outline-light":"outline-primary"} id={index} onClick={(e)=> {setModalShow(true);setProjNo(e.target.id);}}>{isUser?"View":"Edit"}</Button>
+                <Button className="ml-5" variant="outline-danger" id={index} onClick={handleDelete} disabled={row.vm.length === 0? false:true}>Delete Project</Button>
+                <br/></th>
+                </tr>
+                {row.vm.map((vm,idx)=> { return(
+                    <tr className="align-items-center">
+                        <td>{vm.name}</td>
+                        <td>{vm.cost}</td>
+                    </tr>
+                )})}
+            </React.Fragment>
         )
     }
     const zoneMap = {'us-central-a':0,'us-central-b':1,'eu-east-a':2,'eu-west-b':3};
 
-    // const quotas = [{nvm:5, disk:[2,3,4], gpuP:[1,1,1,1,1], gpu:[1,1,1,1,1],mfP:[2,2,2,2,2], mf:[2,2,2,2,2]},
-    //                 {nvm:15, disk:[2,3,5], gpuP:[1,2,3,4,5], gpu:[1,1,2,1,1],mfP:[2,0,2,2,2], mf:[2,2,2,4,2]},
-    //                 {nvm:52, disk:[7,3,6], gpuP:[1,1,0,10,0], gpu:[1,2,1,1,1],mfP:[2,2,0,2,2], mf:[8,2,2,2,2]},
-    //                 {nvm:2, disk:[4,3,4], gpuP:[1,0,1,0,1], gpu:[1,1,11,3,1],mfP:[2,2,0,20,2], mf:[2,8,2,7,2]}]
+    const quotas = [{nvm:5, disk:[2,3,4], gpuP:[1,1,1,1,1], gpu:[1,1,1,1,1],mfP:[2,2,2,2,2], mf:[2,2,2,2,2]},
+                    {nvm:15, disk:[2,3,5], gpuP:[1,2,3,4,5], gpu:[1,1,2,1,1],mfP:[2,0,2,2,2], mf:[2,2,2,4,2]},
+                    {nvm:52, disk:[7,3,6], gpuP:[1,1,0,10,0], gpu:[1,2,1,1,1],mfP:[2,2,0,2,2], mf:[8,2,2,2,2]},
+                    {nvm:2, disk:[4,3,4], gpuP:[1,0,1,0,1], gpu:[1,1,11,3,1],mfP:[2,2,0,20,2], mf:[2,8,2,7,2]}]
 
     const userCount = [{zone:"us-central-a",users:12},
                         {zone:"us-central-b",users:10},
@@ -61,7 +81,7 @@ function Profile(){
                 </Navbar.Collapse>
             </Navbar>
         <Row>
-            <Nav variant="pills">
+            <Nav variant="pills" className="pt-2">
                 <Nav.Item>
                     <Nav.Link href="/">DashBoard</Nav.Link>
                 </Nav.Item>
@@ -75,8 +95,14 @@ function Profile(){
                     <Nav.Link eventKey="link-3" href="/metrics">Metrics</Nav.Link>
                 </Nav.Item>
             </Nav>
+            <Button className="ml-auto mr-5" variant="outline-primary" onClick={()=> setProjShow(true)}>Add Project</Button>
         </Row>
         <br/><br/>
+        <Row className="d-flex justify-content-center">
+            <Alert show={vProj} variant="success" dismissible onClose={() => setVP(false)}>
+                <Alert.Heading>Project Created Successfully</Alert.Heading>
+            </Alert>
+        </Row>
 
             <Form class="d-flex justify-content-around">
                 <Row className="pt-3">
@@ -149,11 +175,12 @@ function Profile(){
 
             <Row className="d-flex justify-content-center pt-3">
             <Form.Label className="font-weight-bolder h3">Active Projects</Form.Label>
-            <Table striped hover className='text-center'>
+            <Table bordered variant="dark" hover className='text-center'>
                 <thead>
                     <tr>
                         <th>Project ID</th>
-                        <th>Edit Quotas</th>
+                        <th>Vm ID</th>
+                        <th>Cost</th>
                         
                     </tr>
                 </thead>
@@ -163,6 +190,25 @@ function Profile(){
             </Table>
             </Row> 
             </Form> 
+            <Modal show={projShow} onHide={()=>setProjShow(false)} backdrop="static" keyboard={false}>
+                <Modal.Header closeButton>
+                <Modal.Title>New Project</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                <Form >
+                    <Form.Group controlId="formProjectId" className="mb-4">
+                        <Form.Label>Project ID</Form.Label>
+                        <Form.Control type="text" placeholder="Enter Project ID"/>
+                        <Form.Text className="text-muted">
+                        Project Id muct be Unique
+                        </Form.Text>
+                    </Form.Group>
+                        <Button className="mr-2 ml-2" variant="primary" onClick={()=>{setProjShow(false);setVP(true);setTimeout(() => {setVP(false)}, 1000);}}>Create Project</Button>
+                        <Button variant="secondary" onClick={()=>setProjShow(false)}>Close</Button>
+                </Form>
+                </Modal.Body>
+            </Modal>
+
             <Modal size="xl" aria-labelledby="contained-modal-title-vcenter" show={setModal} onHide={()=> setModalShow(false)} backdrop="static" keyboard={false} centered>
                 <Modal.Header closeButton>
                 <Modal.Title id="contained-modal-title-vcenter">

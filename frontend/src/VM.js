@@ -33,6 +33,14 @@ function VM () {
     const [validated, setValidated] = React.useState(false);
     const [cost,setCost] = React.useState(0);
     const [dataReceived,setDataReceived] = React.useState(false);
+    const [vmId,setvmId] = React.useState("");
+
+    const tableData=[{ name:"Mark", zone:"us-central-a", iIP:"123.234.345.1", eIP:"322.214.12.12", status:false},
+            { name:"Maurya", zone:"us-central-a", iIP:"123.234.345.1", eIP:"322.214.12.12",status:true },
+            { name:"Mister", zone:"us-central-a", iIP:"123.234.345.1", eIP:"322.214.12.12",status:false },
+            { name:"Master", zone:"us-central-a", iIP:"123.234.345.1", eIP:"322.214.12.12",status:true }]
+
+    const [vmdata,setvmdata] = React.useState(tableData)
 
     
 
@@ -74,13 +82,9 @@ function VM () {
         networktag: "",
         hostname: "",
         credits:0
-      });
-      const [createVMData, updateFormData] = React.useState(createData);
-
-    const tableData=[{ name:"Mark", zone:"us-central-a", iIP:"123.234.345.1", eIP:"322.214.12.12", status:false},
-            { name:"Maurya", zone:"us-central-a", iIP:"123.234.345.1", eIP:"322.214.12.12",status:true },
-            { name:"Mister", zone:"us-central-a", iIP:"123.234.345.1", eIP:"322.214.12.12",status:false },
-            { name:"Master", zone:"us-central-a", iIP:"123.234.345.1", eIP:"322.214.12.12",status:true }]
+    });
+    const [createVMData, updateFormData] = React.useState(createData);
+    
 
     const projId = [{id:132435465},{id:132423425},{id:34546765},{id:98765432},{curr:5674839210,username:"sdfgfh",userid:765432342}];
     const vm = [{name:"asdlfjns"},
@@ -114,23 +118,28 @@ const handleSubmit = (e) => {
         const formData = new FormData(form);
         e.preventDefault();
         let json = Object.fromEntries(formData.entries())
+        let tableEntry = {}
         console.log(json)
         json["machinetype"] = json["machinetype"].split(' ')[0]
         json["disk"] = json["disk"].split(' ')[0]
-        json["gpu"] = json["gpu"].split(' ')[0]
-        json = JSON.stringify(json)
-        console.log(json)
-        if (form.name === "create") {
-        setShow("Created");
-        setcreateShow(false);
+        if(json["gpu"] !== 'None')
+            json["gpu"] = json["gpu"].split(' ')[0]
+        tableEntry["name"] = json['name']
+        tableEntry["zone"] = json['zone']
+        tableEntry["eIP"] = json['eip']
+        // tableEntry["iIP"] = json['iip']
+        tableEntry["status"] = json['status']
+
+        let out = JSON.stringify(json)
+        if (form.id === "create") {
+            setvmdata([...vmdata,tableEntry]);
+            console.log("12321")
+            setShow("Created");
+            setcreateShow(false);
         }
         else if (form.name === "update") {
             setShow("Updated");
             setTransferShow(false);
-        }
-        else if (form.name === "delete") {
-            setShow("Deleted");
-            setdeleteShow(false);
         }
         setTimeout(() => {
             setShow("None")
@@ -163,11 +172,20 @@ React.useEffect((e) => {
         setLoading([...isLoading.slice(0,index),false,...isLoading.slice(index+1)]);
         setStopped([...isStopped.slice(0,index),!isStopped[index],...isStopped.slice(index+1)]);
       });
-      tableData[index].status = isStopped[index];
+      vmdata[index].status = isStopped[index];
     }
-  }, [isLoading,isStopped,tableData]);
+  }, [isLoading,isStopped,vmdata]);
 
     const handleClick = (e) => {index = parseInt(e.target.id);setLoading([...isLoading.slice(0,index),true,...isLoading.slice(index+1)]);}
+
+    const handleDelete = (e) => {
+        const newData = [...vmdata]
+        newData.splice(vmdata.findIndex((c)=>c.name===vmId),1)
+        setvmdata(newData);
+        setdeleteShow(false);
+        setShow("Deleted");
+        setTimeout(() => {setShow("None")}, 3000);
+    };
 
       const renderTable = (row,index) => {
         isLoading.push(false)
@@ -182,6 +200,11 @@ React.useEffect((e) => {
                 <td className="d-flex justify-content-center align-items-center" colSpan="2">
                     <Button className="ml-2 mr-2 pl-3 pr-3" variant={isStopped[index]?"danger":"success"} id={index} disabled={isLoading[index]} onClick={handleClick}>
                         {isLoading[index] ? !isStopped[index] ?'Stopping':'Starting' : isStopped[index] ?'Offline':'Online'}
+                    </Button>
+                </td>
+                <td className=" justify-content-center align-items-center">
+                    <Button className="ml-2 mr-2 pl-3 pr-3" variant="danger" id={row.name} onClick={(e)=>{setdeleteShow(true);setvmId(e.target.id)}}>
+                        Delete
                     </Button>
                 </td>
               </tr>
@@ -235,7 +258,7 @@ React.useEffect((e) => {
                 <Row>
                     <Container className="rounded border border-light text-center d-flex justify-content-around w-75 p-3">
                         <Button variant="primary" size='md' onClick={() => setcreateShow(true)}>Create VM</Button>
-                        <Button variant="primary" size='md' onClick={() => setdeleteShow(true)}>Delete VM</Button>
+                        {/* <Button variant="primary" size='md' onClick={() => setdeleteShow(true)}>Delete VM</Button> */}
                         <Button variant="primary" size='md' onClick={() => setTransferShow(true)}>Update VM</Button>
                         <Modal size="lg" show={createShow} onHide={() => {setcreateShow(false);createRef.current.reset();setIpShow(false)}} aria-labelledby="contained-modal-title-vcenter" centered backdrop="static" keyboard={false}>
                             <Modal.Header closeButton>
@@ -245,7 +268,7 @@ React.useEffect((e) => {
                             </Modal.Header>
                             <Modal.Body>
                                 <Container>
-                                    <Form ref={createRef} name="create" noValidate validated={validated} onSubmit={handleSubmit}>
+                                    <Form ref={createRef} id="create" noValidate validated={validated} onSubmit={handleSubmit}>
                                     <Row>
                                     <Col>
                                         <Form.Group controlId="formProject">
@@ -415,19 +438,19 @@ React.useEffect((e) => {
                             <Modal.Body>
                                 <Form name="delete">
                                     <Container centered>
-                                        <Row>
-                                            <Form.Group controlId="deleteVm">
-                                                <Form.Label size="lg">Select the VM instance to delete</Form.Label>
-                                                <Form.Control as="select" size="lg">
-                                                <option>Select VM</option>
-                                                {vm.map((row,index)=> {return(<option>{row.name}</option>)})}
-                                                </Form.Control>
+                                        <Row className="justify-content-center">
+                                            <Form.Group controlId="deleteVm" className="d-flex">
+                                                <Form.Label className="mr-3 text-center" size="md">Confirm to Delete VM Instance</Form.Label>
+                                                <Form.Control type="text" name="vmId" defaultValue={vmId} disabled />
                                             </Form.Group>
                                         </Row>
                                         <br/>
-                                        <Row>
-                                            <Button variant="primary" onClick={() => {setdeleteShow(false);setShow("Deleted");setTimeout(() => {setShow("None")}, 3000);}}>
-                                                    Delete VM
+                                        <Row className="justify-content-around">
+                                            <Button variant="primary" size="lg" onClick={handleDelete}>
+                                                    Delete
+                                            </Button>
+                                            <Button variant="danger" size="lg" onClick={() => {setdeleteShow(false);}}>
+                                                    Cancel
                                             </Button>
                                         </Row>
                                     </Container>
@@ -441,7 +464,7 @@ React.useEffect((e) => {
                             </Modal.Title>
                             </Modal.Header>
                             <Modal.Body>
-                            <Form ref={updateRef} name="update" noValidate validated={validated} onSubmit={handleSubmit}>
+                            <Form ref={updateRef} id="update" noValidate validated={validated} onSubmit={handleSubmit}>
                                     <Container centered>
                                         <Row>
                                             <Form.Group controlId="updateVm">
@@ -767,10 +790,11 @@ React.useEffect((e) => {
                         <th>External IP</th>
                         <th>Internal IP</th>
                         <th>Status</th>
+                        <th>Delete VM</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {tableData.map(renderTable)}
+                        {vmdata.map(renderTable)}
                     </tbody>
                 </Table>
             </Container>
