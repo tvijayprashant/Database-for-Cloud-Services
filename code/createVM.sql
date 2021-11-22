@@ -35,7 +35,11 @@ DECLARE
     d_success int;
     d_user_project int;
     d_vmid char(10);
-    
+    d_ram_cost int;
+    d_disk_cost DECIMAL(10,2);
+    d_gpu_cost DECIMAL(10,2);
+    d_cpu_cost DECIMAL(10,2);
+    d_vm_cost DECIMAL(10,2);
 BEGIN 
     d_success:=0;
     d_vmid:='0000000000';

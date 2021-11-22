@@ -21,7 +21,7 @@ root.on("notice", (msg) => console.warn("notice:", msg.message));
 const runtime_insert = new Client({
 	host: "localhost",
 	port: 5432,
-	user: "postgres",
+	user: "runtime_user",
 	password: "123",
 	database: "cloud_management",
 });
@@ -98,3 +98,4 @@ function create_login_client(username, passwd) {
 exports.create_login_client = create_login_client;
 exports.sign_up = sign_up;
 exports.login_user = login_user;
+exports.runtime_insert = runtime_insert;

@@ -1,13 +1,19 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 // const client = require("./database");
-const runtime = require("./runtime");
+const { Random_insert } = require("./runtime");
 const { create_login_client, sign_up, login_user } = require("./database");
 const app = express();
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./"));
+
+let rcount = 1;
+setInterval(() => {
+	Random_insert(rcount);
+	rcount = rcount + 1;
+}, 10 * 1000);
 
 app.get("/", async function (req, res) {
 	// client = create_login_client("admin_user", "123");
@@ -22,6 +28,7 @@ app.get("/", async function (req, res) {
 	// 	}
 	// 	await client.end();
 	// });
+
 	res.send("hello world!");
 });
 
@@ -169,7 +176,7 @@ app.get("/signup", async function (req, res) {
 								);
 
 								sign_up.query(
-									`GRANT SELECT,INSERT ON RUNTIME TO "${req.email}"`,
+									`GRANT SELECT,INSERT,DELETE ON RUNTIME TO "${req.email}"`,
 									(err, permission) => {
 										if (err) {
 											console.log(err);
@@ -237,9 +244,6 @@ app.get("/login", function (req, res) {
 										message: "Failed to Authenticate due to invalid password.",
 									});
 								}
-							} else {
-								console.log(error);
-								await login.end();
 							}
 						}
 					);
@@ -348,8 +352,9 @@ app.get("/:projectID/create_vm", function (request, res) {
 app.get("/:projectID/delete_vm", function (req, res) {
 	req = {
 		email: "jawahar@pes.edu",
-		vm: "VM_0000005",
+		vm: "VM_0000006",
 		userID: "USR000009",
+		password: "jawahar@123",
 	};
 	login = create_login_client(req.email, req.password);
 	login.connect();
@@ -363,11 +368,13 @@ app.get("/:projectID/delete_vm", function (req, res) {
 						message: "VM has been deleted!",
 					});
 				} else {
+					console.log(vm.rows[0].delete_vm);
 					res.json({
 						message: "VM cannot be deleted due to unknow reason",
 					});
 				}
 			} else {
+				console.log(err);
 				res.json({
 					message: "VM cannot be deleted due to unknow reason",
 				});
