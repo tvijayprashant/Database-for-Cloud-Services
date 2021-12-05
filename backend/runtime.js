@@ -3,10 +3,37 @@ const { runtime_insert } = require("./database");
 const Random_insert = function Random_insert(n) {
 	runtime_insert.connect();
 	runtime_insert.query(
+		`select vm_id from VM where status<>'Stopped'`,
+		(err, vms) => {
+			if (!err) {
+				for (let vm in vms.rows){
+					let m_dates = new Date();
+					let dates = new Date(m_dates.setMilliseconds(0));
+					let new_date = new Date(dates.setSeconds(0));
+					let new_min_date = new Date(new_date.setMinutes(0));
+					let new_hour_date = new_min_date.setHours(
+						new_min_date.getHours() + n
+					);
+					timestamp = `insert into runtime values ('${vms.rows[vm].vm_id}',to_timestamp(${new_hour_date}/1000.0),0.00,0.00,0.00,0.00,'00:00:00','00:00:00')`
+					runtime_insert.query(timestamp, async (err, insert_runtime) => {
+						if (err) {
+							console.log(err);
+						} else {
+							// console.log(insert_runtime);
+						}
+					});
+				}
+				console.log("runtime update");
+			}	
+			else {
+				console.log(err);
+			}
+		});
+	runtime_insert.query(
 		`select vm_id from VM where status='Stopped'`,
 		(err, vms) => {
 			if (!err) {
-				console.log(vms.rows[0].vm_id);
+				// console.log(vms.rows[0].vm_id);
 				for (let vm in vms.rows) {
 					console.log(vms.rows[vm].vm_id);
 					const disk_usage =

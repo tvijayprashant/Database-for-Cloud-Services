@@ -4,16 +4,21 @@ const bodyParser = require("body-parser");
 const { Random_insert } = require("./runtime");
 const { create_login_client, sign_up, login_user } = require("./database");
 const app = express();
+const cors = require('cors');
+const { removeAllListeners } = require("nodemon");
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(express.static("./"));
+app.use(cors({
+    origin: '*'
+}));
 
 let rcount = 1;
 setInterval(() => {
 	Random_insert(rcount);
 	rcount = rcount + 1;
-}, 10 * 1000);
+}, 1000*1000);
 
 app.get("/", async function (req, res) {
 	// client = create_login_client("admin_user", "123");
@@ -32,27 +37,27 @@ app.get("/", async function (req, res) {
 	res.send("hello world!");
 });
 
-app.get("/signup", async function (req, res) {
-	req = {
-		name: "Jawahar",
-		email: "jawahar@pes.edu",
-		password: "jawahar@123",
-		payment: "LOAN",
-	};
-
+app.post("/signup", async function (req, res) {
+	// req = {
+	// 	name: "Jawahar",
+	// 	email: "jawahar@pes.edu",
+	// 	password: "jawahar@123",
+	// 	payment: "LOAN",
+	// };
+	req=req.body[0]
 	sign_up.connect();
 	let user_id = 0;
 	sign_up.query(`select max(user_id) from user_`, (err, user) => {
 		if (err) {
 			console.log(err);
 		} else {
-			console.log(user);
+			// console.log(user);
 			let usr = user.rows[0].max;
 			let inc_user_id = 0;
 			inc_user_id = parseInt(usr.substring(3)) + 1;
-			console.log(inc_user_id);
+			// console.log(inc_user_id);
 			inc_user_id = inc_user_id.toString();
-			console.log(inc_user_id);
+			// console.log(inc_user_id);
 			user_id = "USR" + inc_user_id.padStart(6, "0");
 			// await console.log("Hello : %s", user_id);
 			let usr_password = "";
@@ -189,17 +194,21 @@ app.get("/signup", async function (req, res) {
 								);
 
 								sign_up.query(
-									`insert into user_ values ('${user_id}',${1},'${req.name}','${
-										req.email
-									}','${usr_password}',0,'${req.payment}')`,
+									`insert into user_ values ($1,${1},$2,$3,$4,0,$5)`,
+									[user_id.toString(),req.name.toString(), req.email.toString(),usr_password.toString(),req.payment.toString()],
 									(err, insert) => {
 										if (err) {
 											console.log(err);
 										} else {
+											
+											sign_up.end()
+											res.json({
+												authenticated: 1,
+												message: "User has been created!",
+											});
 										}
 									}
 								);
-								res.send("User has been created!");
 							}
 						}
 					);
@@ -209,33 +218,43 @@ app.get("/signup", async function (req, res) {
 	});
 });
 
-app.get("/login", function (req, res) {
+app.post("/login", function (req, res) {
 	login_user.connect();
-	req = {
-		email: "jawahar@pes.edu",
-		password: "jawahar@123",
-	};
+	// req = {
+	// 	email: "jawahar@pes.edu",
+	// 	password: "jawahar@123",
+	// };
+	req=req.body[0]
+	// console.log(req.email)
 	login_user.query(
-		`select count(*) from USER_EMAILS where EMAIL_ID='${req.email}'`,
+		`select count(*) from USER_EMAILS where EMAIL_ID=$1`,[req.email.toString()],
 		async (err, result) => {
 			if (!err) {
-				// console.log(result.rows[0].count);
+				console.log(result.rows[0].count);
 				if (result.rows[0].count == 1) {
 					console.log("Checking for Password");
-					console.log(req);
+					// console.log(req);
 					crypt = `crypt('${req.password}', PASSWD)`;
 					const login = create_login_client(req.email, req.password);
 					login.connect();
 					await login.query(
-						`select count(email_id) from USER_ where EMAIL_ID='${req.email}' and PASSWD=${crypt}`,
+						`select count(email_id) from USER_ where EMAIL_ID=$1 and PASSWD=${crypt}`,[req.email],
 						async (error, user) => {
 							if (!error) {
-								console.log(user.rows);
+								// console.log(user.rows);
 								if (user.rows[0].count == 1) {
 									console.log("User authenticated!");
-									res.json({
-										authenticated: 1,
-										message: "User Authenticated.",
+									login.query(`select * from USER_ where email_id = $1`,[req.email],(err,resp)=>{
+										if (err) console.log(err)
+										else{
+											// console.log(resp.rows[0]);
+											login.end();
+											res.json({
+												authenticated: 1,
+												message: "User Authenticated.",
+												user: resp.rows[0]
+											});
+										}
 									});
 								} else {
 									console.log("User Login failed!");
@@ -245,10 +264,21 @@ app.get("/login", function (req, res) {
 									});
 								}
 							}
+							else{
+								console.log("2User Login failed!");
+									res.json({
+										authenticated: 0,
+										message: "Failed to Authenticate due to invalid password.",
+									});
+							}
+							// await login.end();
 						}
 					);
 				} else {
-					console.log(err);
+					res.json({
+						authenticated: 0,
+						message: `Failed to Authenticate due to invalid email : ${req.email}.`,
+					});
 				}
 			} else {
 				console.log(err);
@@ -262,28 +292,82 @@ app.get("/login", function (req, res) {
 	);
 });
 
-app.get("/project", function (req, res) {
-	req = {
-		name: "cdsaml-12350",
-		email: "jawahar@pes.edu",
-		password: "jawahar@123",
-		userID: "USR000009",
-	};
+app.post("/project", (req,res) => {
+	// console.log(req);
+	// req = {
+	// 	email: 'vp1@gmail.com',
+	// 	passwd: 'a',
+	// 	user_id:'USR000007'
+	// }
+	req = req.body[0];
+	login = create_login_client(req.email,req.passwd);
+	login.connect();
+	login.query(`select project_id from worked_on where user_id = $1`,[req.user_id],(err,projects) => {
+		if (err) {
+			console.log(err);
+			res.json({
+				id:[],
+				curr: null
+			});
+		}
+		else{
+			// console.log(projects)
+			list = [];
+			for (let row = projects.rows.length - 1; row >= 0; row--){
+				// console.log(projects.rows[row])
+				if(row == 0){
+					list.push({'id':projects.rows[row].project_id})
+					res.json({
+						id: list,
+						curr : projects.rows[row].project_id
+					})
+				}
+				else{
+					list.push({'id':projects.rows[row].project_id});
+				}
+			}
+			
+		}
+		
+	});
+	// login.end();
+
+
+});
+
+app.post("/create_project", function (req, res) {
+	// req = {
+	// 	name: "cdsaml-12350",
+	// 	email: "jawahar@pes.edu",
+	// 	password: "jawahar@123",
+	// 	userID: "USR000009",
+	// };
+	req = req.body[0];
 	login = create_login_client(req.email, req.password);
 	login.connect();
 	login.query(
-		`insert into project values ('${req.name}')`,
+		`insert into project values ($1)`,[req.name],
 		async (err, project) => {
 			if (err) {
 				console.log(err);
 			} else {
+				// console.log(req);
+				// console.log(req.name);
+				// console.log(req.user_id);
 				login.query(
-					`insert into worked_on values ('${req.name}','${req.userID}')`,
+					`insert into worked_on values ($1,$2)`,[req.name,req.user_id],
 					async (err, insert) => {
 						if (err) {
 							console.log(err);
-						} else {
+							login.end();
 							res.json({
+								res:0,
+								message: "project not created",
+							});
+						} else {
+							login.end();
+							res.json({
+								res:1,
 								message: "Successfully created project.",
 							});
 						}
@@ -295,33 +379,166 @@ app.get("/project", function (req, res) {
 	);
 });
 
-app.get("/:projectID/create_vm", function (request, res) {
-	req = {
-		userID: "USR000009",
-		email: "jawahar@pes.edu",
-		password: "jawahar@123",
-		name: "chaii",
-		boot_disk: "Ubuntu-20.04",
-		preemptibility: false,
-		internal_ip: "10.1.10.21",
-		external_ip: null,
-		host_name: "microsoft",
-		network_tag: null,
-		subnet: null,
-		zone_name: "eu-east-a",
-		projectID: request.params.projectID,
-		ram: 32,
-		gpu: "(0,0,0,0,0)",
-		disk: "(1,0,0)",
-		machine: "EC2",
-		date: "2021-11-10 10:00:00",
-	};
+app.post("/status",function(req,res){
+	// req = {
+	// 	vm: 'VM_0000002',
+	// 	status: "Running",
+	// 	email: 'vp1@gmail.com',
+	// 	passwd: 'a',
+	// }
+	req = req.body[0];
+	// console.log(req)
+	login = create_login_client(req.email,req.passwd);
+	login.connect()
+	login.query(`update vm set status=$1 where vm_id=$2`,[req.status,req.vmId],async (err,update)=>{
+		if(err){
+			console.log(err)
+		}
+		else{
+			res.json({
+				message: "Started VM"
+			})
+		}
+		await login.end();
+	});
+})
 
+app.get("/vm_metric", function (req, res) {
+	req={
+		email: 'vp1@gmail.com',
+		passwd: 'a',
+		user_id:'USR000007',
+		vm:'VM_0000002'
+	}
+	login = create_login_client(req.email,req.passwd);
+	login.connect()
+	metrics = {du:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],ru:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],gu:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],cu:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],cr:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],gr:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]};		
+	// console.log(vms.rows[vm].name.toString());
+	login.query(`select disk_usage, ram_usage, gpu_usage,cpu_usage, gpu_runtime, cpu_runtime from runtime where vm_id = $1 order by time limit 24`,[req.vm],async (err,metric) => {
+		if(err) {console.log(err);
+		res.json({metric:metrics});}
+		else{
+			for(row in metric.rows){
+				metrics.du[row] = metric.rows[row].disk_usage;
+				metrics.ru[row] = metric.rows[row].ram_usage;
+				metrics.gu[row] = metric.rows[row].gpu_usage;
+				metrics.cu[row] = metric.rows[row].cpu_usage;
+				metrics.gr[row] = metric.rows[row].gpu_runtime;
+				metrics.cr[row] = metric.rows[row].cpu_runtime;
+			}
+			// await mlist.push(metrics);
+			// console.log(mlist);
+			// console.log(metrics)
+			res.json({metric:metrics});
+		}
+	})
+	// let result = {vms:vms.rows, metric:metrics};
+	// console.log(result);
+	//
+});
+
+app.get("/zone_metric",function(req,res){
+	req={
+		email: 'vp1@gmail.com',
+		passwd: 'a',
+		user_id:'USR000007',
+		vm:'VM_0000002'
+	}
+	sign_up.connect()
+	sign_up.query(`select vm_id from vm where `)
+})
+
+
+app.post("/vm", async function (req, res) {
+	// req={
+	// 	email: 'vp4@gmail.com',
+	// 	passwd: 'a',
+	// 	user_id:'USR000007',
+	// 	projectID: 'cdsaml-32445' 
+	// }
+	// console.log(req.body);
+	req = req.body;
+	login = create_login_client(req.email,req.passwd);
+	login.connect()
+	await login.query(`select name,vm_id,zone_name,external_ip,internal_ip,status from worked_on natural join vm where project_id=$1 and user_id=$2`,[req.projectID, req.user_id],async (err,vms) => {
+		if(err){
+			console.log(err);
+			res.json({
+				vms:"Error in SQL statement"
+			});
+		}
+		else{
+			// console.log(vms.rows);
+			res.json({vms:vms.rows});
+		}
+		login.end();
+	});
+});
+
+app.get("/vms_cost",function(req,res){
+	req={
+		email: 'vp1@gmail.com',
+		passwd: 'a',
+		user_id:'USR000007',
+		// projectID: 'pluck-rarity',
+		vm:'VM_0000002'
+	}
+	login = create_login_client(req.email,req.passwd);
+	login.connect()
+	login.query(`select sum(cpu_runtime) as cr,sum(gpu_runtime) as gr from runtime where vm_id = $1`,[req.vm],async (err,runtime) => {
+		if(err) console.log(err);
+		else{
+			console.log(runtime.rows[0].cr.hours);
+			login.query(`select cost from monitors where vm_id = $1`,[req.vm	],async (err,cost) => {
+				if (err) console.log(err)
+				else{
+					console.log(cost.rows[0].cost);
+					cost = cost.rows[0].cost
+						.substring(1, cost.rows[0].cost.length - 1)
+						.split(",")
+						.map(function (item) {[0]
+							return parseInt(item);
+						});
+					console.log([runtime.rows[0].cr.hours * cost[0], runtime.rows[0].gr.hours * cost[1]])
+					res.json({
+						cost:[runtime.rows[0].cr.hours * cost[0], runtime.rows[0].gr.hours * cost[1]]
+					})
+				}
+			});
+		}
+	})
+	// console.log(clist)	
+});
+
+
+app.post("/create_vm", function (req, res) {
+	// req = {
+	// 	userID: "USR000007",
+	// 	email: "jawahar@pes.edu",
+	// 	password: "jawahar@123",
+	// 	name: "chaii",
+	// 	boot_disk: "Ubuntu-20.04",
+	// 	preemptibility: false,
+	// 	internal_ip: "10.1.10.21",
+	// 	external_ip: null,
+	// 	host_name: "microsoft",
+	// 	network_tag: null,
+	// 	subnet: null,
+	// 	projectID:'pluck-rarity',
+	// 	zone_name: "us-central-a",
+	// 	ram: 32,
+	// 	gpu: "(0,0,0,0,0)",
+	// 	disk: "(1,0,0)",
+	// 	machine: "EC2",
+	// 	date: "2021-11-10 10:00:00",
+	// };
+	req = req.body;
 	login = create_login_client(req.email, req.password);
 	login.connect();
 
 	login.query(
-		`select create_vm('${req.userID}','${req.name}','${req.boot_disk}','${req.preemptibility}','${req.internal_ip}',${req.external_ip},'${req.host_name}',${req.network_tag},${req.subnet},'${req.zone_name}','${req.projectID}',${req.ram},'${req.gpu}','${req.disk}','${req.machine}','${req.date}')`,
+		`select create_vm($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13,$14,$15,$16)`,
+		[req.userID, req.name, req.boot_disk, req.preemptibility, req.internal_ip, req.external_ip, req.host_name, req.network_tag, req.subnet, req.zone_name, req.projectID, req.ram, req.gpu, req.disk, req.machine, req.date],
 		async (err, vm) => {
 			if (!err) {
 				if (vm.rows[0].create_vm == "0000000000") {
@@ -349,13 +566,15 @@ app.get("/:projectID/create_vm", function (request, res) {
 	);
 });
 
-app.get("/:projectID/delete_vm", function (req, res) {
-	req = {
-		email: "jawahar@pes.edu",
-		vm: "VM_0000006",
-		userID: "USR000009",
-		password: "jawahar@123",
-	};
+app.post("/delete_vm", function (req, res) {
+	req = req.body;
+	// req = {
+	// 	email: "jawahar@pes.edu",
+	// 	vm: "VM_0000006",
+	// 	userID: "USR000009",
+	// 	password: "jawahar@123",
+	// };
+	// console.log(req)
 	login = create_login_client(req.email, req.password);
 	login.connect();
 
@@ -364,19 +583,23 @@ app.get("/:projectID/delete_vm", function (req, res) {
 		async (err, vm) => {
 			if (!err) {
 				if (vm.rows[0].delete_vm == 1) {
+					console.log(vm.rows[0].delete_vm);
 					res.json({
+						result: 1,
 						message: "VM has been deleted!",
 					});
 				} else {
 					console.log(vm.rows[0].delete_vm);
 					res.json({
+						result:0,
 						message: "VM cannot be deleted due to unknow reason",
 					});
 				}
 			} else {
 				console.log(err);
 				res.json({
-					message: "VM cannot be deleted due to unknow reason",
+					result:0,
+					message: "VM cannot be deleted due to unknow reason. SQL Error",
 				});
 			}
 			await login.end();
@@ -384,7 +607,52 @@ app.get("/:projectID/delete_vm", function (req, res) {
 	);
 });
 
-app.get("/:projectID/vm/edit_config", function (req, res) {
+app.post("/vm/details", function(req,res){
+	req = req.body;
+	console.log(req);
+	login = create_login_client(req.email,req.password);
+	login.connect();
+	// console.log(req);
+	login.query(`select * from VM where vm_id=$1`,[req.vm], async (err,details)=>{
+		if(err){
+			console.log(err);
+		}
+		else{
+			res.send(details.rows[0]);
+		}
+		await login.end();
+	});
+})
+
+app.post("/vm/quotas", function(req,res){
+	console.log(req.body);
+	req = req.body;
+	login = create_login_client(req.email, req.password);
+	login.connect();
+	login.query(`select quotas from project where project_id=$1`,[req.projectID], async (err,quota)=>{
+		if(err){
+			console.log(err);
+		}
+		else{
+			console.log(quota.rows[0]);
+			let quotas = quota.rows[0].quotas;
+			quotas = quotas.split(`""`);
+			quotas = quotas.splice(quotas.length-1);
+			for (let i=0;i<quotas.length;i++){
+				if(quotas[i][quotas[i].length-1] == ',' && quotas[i].length!=1){
+					quotas[i] = `${quotas[i][quotas[i].length-2]}`;
+				}
+				else{
+					quotas[i] = quotas[i];
+				}
+			}
+			console.log(quotas);
+		}
+		await login.end();
+	})
+})
+
+app.post("/vm/edit_config", function (req, res) {
 	client.connect();
 	req = {
 		vmID: "VM_0000005",
