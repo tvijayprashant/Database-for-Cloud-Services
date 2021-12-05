@@ -1,7 +1,8 @@
 import React from "react";
 import { Container, Row, Col, Navbar, Nav, NavDropdown, Card, Button,Carousel} from 'react-bootstrap';
-import { useLocation,Link } from "react-router-dom";
+import {withRouter,useHistory } from "react-router-dom";
 import { Line } from 'react-chartjs-2';
+import axios from 'axios';
 
 const data = {
   labels: ['1', '2', '3', '4', '5', '6'],
@@ -24,42 +25,105 @@ const options = {
     }
   };
 
-const projId = [{id:132435465},{id:132423425},{id:34546765},{id:98765432},{curr:5674839210,username:"sdfgfh",userid:765432342}];
-const vm = [{name:"asfdgsfg"},{name:"sadfasfg"},{name:"Agnihotri"},{name:"Netradham"},{name:"SunnyDay"}]
+let projId = {'id':[],'curr':''};
+// let vm = [];
+// {name:"asfdgsfg"},{name:"sadfasfg"},{name:"Agnihotri"},{name:"Netradham"},{name:"SunnyDay"}
 
 function User_DashBoard(props){
-    const location = useLocation();
-    const state = location.state;
+    const history = useHistory();
+    const [dataReceived,setDataReceived] = React.useState(true);
+    const [vm,setVM] = React.useState([]);
+    const [proj,setProj] = React.useState(projId.curr);
+    var props = {location:{state:{
+        username: "vp4@gmail.com",
+		password: "a",
+		user: "USR000007",
+	}}};
+    
+    const handleProj = async (e)=>{
+     let req= {email: props.location.state.username, passwd: props.location.state.password, user_id:props.location.state.user, projectID:proj}
+        await axios({method:"POST",
+                url:"http://localhost:8008/vm",
+                data:req})
+            .then((res)=>{
+                let vms = res.data.vms;
+                console.log(vms)
+                setVM(vms)
+            })
+            .catch((err)=>console.log(err))
+    }
+    async function get_proj(){
+        let data = [{email: props.location.state.username, passwd: props.location.state.password, user_id:props.location.state.user}]
+
+        await axios({
+            method: "POST",
+            url: "http://localhost:8008/project",
+            data: data
+        })
+        .then((res)=> {console.log(res.data);projId.id = res.data.id;setProj(res.data.curr);})
+        .catch(err => console.log(err))
+        handleProj()
+    }
+    
+    React.useEffect(()=>{
+        get_proj();
+
+    },[])
+
+
+    // React.useEffect(()=>{
+    //     let data = [{email: props.location.state.username, passwd: props.location.state.password, user_id:props.location.state.user}]
+    //     axios({
+    //         method: "POST",
+    //         url: "http://localhost:8008/:"+proj+"/vm",
+    //         data: data
+    //       })
+    //     .then((res)=> {setQuotas(res.data);setDataReceived(true);})
+    //     .catch(err => console.log(err))
+    // },[dataReceived,proj]);
 
     return(
+    <React.Fragment>
+    { dataReceived &&
     <Container fluid>
             <Navbar bg="dark" variant="dark" sticky="top">
-            {console.log(state)}
                 <Navbar.Brand href="/">GCP</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
                     <NavDropdown  title="My Projects" id="basic-nav-dropdown">
-                        {projId.slice(0,projId.length-1).map((row,index)=>{return(<NavDropdown.Item variant="dark" href={"/"+row.id}>{row.id}</NavDropdown.Item>)})}
+                        {projId.id.map((row,index)=>{return(<NavDropdown.Item variant="dark" onClick={(e)=>{setProj(e.currentTarget.innerText);handleProj()}}>{row.id}</NavDropdown.Item>)})}
                         <NavDropdown.Divider />
-                        <NavDropdown.Item style={{backgroundColor: 'lightblue',color:'red'}} href={"/"+projId[projId.length-1].curr}>{projId[projId.length-1].curr}</NavDropdown.Item>
+                        <NavDropdown.Item style={{backgroundColor: 'lightblue',color:'red'}}>{proj}</NavDropdown.Item>
                     </NavDropdown>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-        <Row>
+        <Row className="mt-3">
             <Nav variant="pills">
                 <Nav.Item>
-                    <Nav.Link active href="/">DashBoard</Nav.Link>
+                    <Nav.Link active onClick={()=> history.push({
+    pathname: '/dashboard',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>DashBoard</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="link-1" href="/profile">Profile</Nav.Link>
+                    <Nav.Link eventKey="profile" onClick={()=> history.push({
+    pathname: '/profile',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Profile</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="link-2" href="/vm">VM Instances</Nav.Link>
+                    <Nav.Link eventKey="vm" onClick={()=> history.push({
+    pathname: '/vm',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>VM Instances</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="link-3" href="/metrics">Metrics</Nav.Link>
+                    <Nav.Link eventKey="metrics" onClick={()=> history.push({
+    pathname: '/metrics',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Metrics</Nav.Link>
                 </Nav.Item>
             </Nav>
         </Row>
@@ -72,12 +136,15 @@ function User_DashBoard(props){
                     <Card.Header>Profile</Card.Header>
                     <Card.Body>
                     <Card.Title>Project ID</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{projId[projId.length-1].curr}</Card.Subtitle>
+                    <Card.Subtitle className="mb-2 text-muted">{proj}</Card.Subtitle>
                     <Card.Title>User Name</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{projId[projId.length-1].username}</Card.Subtitle>
+                    <Card.Subtitle className="mb-2 text-muted">{props.location.state.username}</Card.Subtitle>
                     <Card.Title>User ID</Card.Title>
-                    <Card.Subtitle className="mb-2 text-muted">{projId[projId.length-1].userid}</Card.Subtitle>
-                    <Button className="text-center mt-3" variant="outline-dark" bg="light" href="/profile">Go to Profile</Button>
+                    <Card.Subtitle className="mb-2 text-muted">{props.location.state.user}</Card.Subtitle>
+                    <Button className="text-center mt-3" variant="outline-dark" bg="light" onClick={()=> history.push({
+    pathname: '/profile',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Go to Profile</Button>
                     </Card.Body>
                 </Card>
                 </Row>
@@ -86,7 +153,10 @@ function User_DashBoard(props){
                     <Card.Header>VM Instances</Card.Header>
                     <Card.Body>
                     {vm.map((row)=>{return(<Card.Subtitle className="mb-2 text-muted">{row.name}</Card.Subtitle>)})}
-                    <Button className="text-center mt-3" variant="outline-dark" bg="light" href="/vm">Go to VM Instances</Button>
+                    <Button className="text-center mt-3" variant="outline-dark" bg="light" onClick={()=> history.push({
+    pathname: '/vm',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Go to VM Instances</Button>
                     </Card.Body>
                 </Card> 
                 </Row>
@@ -97,12 +167,7 @@ function User_DashBoard(props){
                     <Card.Body>
                         <Carousel interval={5000} pause='hover' indicators={false}>
                             <Carousel.Item >
-                                <Card.Title>Runtime</Card.Title>
-                                <Line data={data} options={options} />
-                                <br/>
-                            </Carousel.Item>
-                            <Carousel.Item >
-                            <Card.Title>CPU_Runtime</Card.Title>
+                                <Card.Title>CPU_Runtime</Card.Title>
                                 <Line data={data} options={options} />
                                 <br/>
                             </Carousel.Item>
@@ -111,9 +176,32 @@ function User_DashBoard(props){
                                 <Line data={data} options={options} />
                                 <br/>
                             </Carousel.Item>
+                            <Carousel.Item >
+                            <Card.Title>CPU_Usage</Card.Title>
+                                <Line data={data} options={options} />
+                                <br/>
+                            </Carousel.Item>
+                            <Carousel.Item >
+                            <Card.Title>GPU_Usage</Card.Title>
+                                <Line data={data} options={options} />
+                                <br/>
+                            </Carousel.Item>
+                            <Carousel.Item >
+                            <Card.Title>Disk_Usage</Card.Title>
+                                <Line data={data} options={options} />
+                                <br/>
+                            </Carousel.Item>
+                            <Carousel.Item >
+                            <Card.Title>Ram_Usage</Card.Title>
+                                <Line data={data} options={options} />
+                                <br/>
+                            </Carousel.Item>
                         </Carousel>
                     <br/>
-                    <Button className="text-center mt-3" variant="outline-dark" bg="light" href="/metrics">Go to Metrics</Button>
+                    <Button className="text-center mt-3" variant="outline-dark" bg="light" onClick={()=> history.push({
+    pathname: '/metrics',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Go to Metrics</Button>
                     </Card.Body>
                 </Card>
             </Col>
@@ -124,7 +212,8 @@ function User_DashBoard(props){
         </Row>
         </Container>
     </Row>
-    </Container>)
+    </Container>}
+    </React.Fragment>)
 }
 
-export default User_DashBoard;
+export default withRouter(User_DashBoard);

@@ -1,33 +1,61 @@
 import React from 'react'
 import { Container,Navbar,Nav,Row,Col,NavDropdown,Form,Table,Button,Modal,Alert } from 'react-bootstrap'
+import { withRouter,useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import axios from 'axios'
 
-function Profile(){
+let projId = {'id':[],'curr':''};
 
+function Profile(props){
+    const history = useHistory()
     const [setModal, setModalShow] = React.useState(false);
     const [projNo,setProjNo] = React.useState(-1);
     const [zone,setZone] = React.useState(0);
     const [isUser,setUser] = React.useState(true);
     const [quota,setQuotas] = React.useState([]);
-    const [dataReceived,setDataReceived] = React.useState(false);
+    const [dataReceived,setDataReceived] = React.useState(true);
     const [projShow, setProjShow] = React.useState(false);
     const [vProj,setVP] = React.useState(false);
+    const [proj,setProj] = React.useState('');
     
-    const tableData = [{id:12345678,vm:[[{name:"sdfsgva",cost:123},{name:"fghd",cost:542}]],total:444},
-                        {id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542},{name:"sdfsgdfsfva",cost:13}],total:444},
-                        {id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542}],total:444}]
+    var props = {location:{state:{
+        username: "vp4@gmail.com",
+        password: "a",
+        user: "USR000007",
+    }}};
+
+    // const tableData = [{id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542}]},
+    //                     {id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542},{name:"sdfsgdfsfva",cost:13}]},
+    //                     {id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542}]}]
+    let tableData = [];
 
     const handleDelete = (e)=>{
         console.log(e.target.id)
     }
 
+    // const handleProj = async (e)=>{
+    //     let req= {email: props.location.state.username, passwd: props.location.state.password, user_id:props.location.state.user, projectID:proj}
+    //        await axios({method:"POST",
+    //                url:"http://localhost:8008/vm",
+    //                data:req})
+    //            .then((res)=>{
+    //                let vms = res.data.vms;
+    //                console.log(vms)
+    //                setVM(vms)
+    //            })
+    //            .catch((err)=>console.log(err))
+    //    }
+
     const renderTable = (row,index) => {
+        let sum = 0;
+        for(let i=0; i < row.vm.length; i++) {
+            sum += row.vm[i].cost;
+        }
         return(
             // <tr>
             <React.Fragment>
                 <tr key={index} className="align-items-center align-content-center">
                 <th rowSpan={row.vm.length+1}>{row.id}<br/><br/>
-                Total Cost: {row.total}<br/><br/>
+                Total Runtime Cost: {sum}<br/><br/>
                 <Button variant={isUser?"outline-light":"outline-primary"} id={index} onClick={(e)=> {setModalShow(true);setProjNo(e.target.id);}}>{isUser?"View":"Edit"}</Button>
                 <Button className="ml-5" variant="outline-danger" id={index} onClick={handleDelete} disabled={row.vm.length === 0? false:true}>Delete Project</Button>
                 <br/></th>
@@ -54,48 +82,105 @@ function Profile(){
                         {zone:"eu-west-b",users:13}]
 
     const userDet = [{name:"Vijay",id:"1201900313",email:"vijayprashant@gmail.com",credits:"50",paytype:"Card"}]
-    const projId = [{id:132435465},{id:132423425},{id:34546765},{id:98765432},{curr:5674839210,username:"sdfgfh",userid:765432342}];
+    // const projId = [{id:132435465},{id:132423425},{id:34546765},{id:98765432},{curr:5674839210,username:"sdfgfh",userid:765432342}];
+
+    
+    let data = [{email: props.location.state.username, password: props.location.state.password, user_id:props.location.state.user}]
+    let req = [{email: props.location.state.username, password: props.location.state.password, user_id:props.location.state.user}]
+
+    async function handleAddProj(e){
+
+        req[0]['name'] = e.target.name.value
+        e.preventDefault();
+        console.log(req)
+        await axios({method:"POST",
+                    url:"http://localhost:8008/create_project",
+                    data:req})
+                .then((res)=>{console.log(res);if(res.data.res === 1){setProjShow(false);setVP(true);setTimeout(() => {setVP(false)}, 1000);get_proj();get_table()}})
+                .catch((err)=>console.log(err))   
+    
+    }
+
+    async function get_proj(){
+        
+        await axios({
+            method: "POST",
+            url: "http://localhost:8008/project",
+            data: data
+        })
+        .then((res)=> {console.log(res.data);projId.id = res.data.id;setProj(res.data.curr);})
+        .catch(err => console.log(err))
+    }
+
+    async function get_table(){
+        for(let i=0;i<projId.length-1;i++){
+            await axios({
+                method:"POST",
+                url:"http://localhost:8008/vm_cost",
+                data: data
+            })
+            .then((res)=>{
+                tableData.push(res.data);
+            })
+            .catch((err)=>console.log(err));
+        }
+    }
 
     React.useEffect(()=>{
-        axios
-        .get("./quotas.json")
-        .then((res)=> {setQuotas(res.data);setDataReceived(true);})
-        .catch(err => console.log(err))
-    },[dataReceived]);
+        get_proj();
+    },[])
+    
+
+    React.useEffect(()=>{
+        get_table();
+    },[])
 
     return (
         <div>
         {dataReceived &&
         <Container fluid>
-            <Navbar bg="light" expand="lg" sticky="top">
+            {console.log(props.location.state)}
+            <Navbar bg="dark" variant="dark" sticky="top">
                 <Navbar.Brand href="/">GCP</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                    <NavDropdown title="My Projects" id="basic-nav-dropdown">
-                        {projId.slice(0,projId.length-1).map((row,index)=>{return(<NavDropdown.Item href={"/"+row.id}>{row.id}</NavDropdown.Item>)})}
+                    <NavDropdown  title="My Projects" id="basic-nav-dropdown">
+                        {projId.id.map((row,index)=>{return(<NavDropdown.Item variant="dark" onClick={(e)=>{setProj(e.currentTarget.innerText)}}>{row.id}</NavDropdown.Item>)})}
                         <NavDropdown.Divider />
-                        <NavDropdown.Item href={"/"+projId[projId.length-1].curr}>{projId[projId.length-1].curr}</NavDropdown.Item>
+                        <NavDropdown.Item style={{backgroundColor: 'lightblue',color:'red'}}>{proj}</NavDropdown.Item>
                     </NavDropdown>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
-        <Row>
+        <Row className="mt-2">
             <Nav variant="pills" className="pt-2">
-                <Nav.Item>
-                    <Nav.Link href="/">DashBoard</Nav.Link>
+            <Nav.Item>
+                    <Nav.Link onClick={()=> history.push({
+    pathname: '/dashboard',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>DashBoard</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link active eventKey="link-1" href="/profile">Profile</Nav.Link>
+                    <Nav.Link eventKey="profile" active onClick={()=> history.push({
+    pathname: '/profile',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Profile</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="link-2" href="/vm">VM Instances</Nav.Link>
+                    <Nav.Link eventKey="vm" onClick={()=> history.push({
+    pathname: '/vm',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>VM Instances</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="link-3" href="/metrics">Metrics</Nav.Link>
+                    <Nav.Link eventKey="metrics" onClick={()=> history.push({
+    pathname: '/metrics',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Metrics</Nav.Link>
                 </Nav.Item>
             </Nav>
-            <Button className="ml-auto mr-5" variant="outline-primary" onClick={()=> setProjShow(true)}>Add Project</Button>
+            <Button className="ml-auto mr-5 " variant="outline-primary" onClick={()=> setProjShow(true)}>Add Project</Button>
         </Row>
         <br/><br/>
         <Row className="d-flex justify-content-center">
@@ -106,20 +191,20 @@ function Profile(){
 
             <Form class="d-flex justify-content-around">
                 <Row className="pt-3">
-                    <Col>
+                    {/* <Col>
                         <Form.Group controlId="formName">
                             <Form.Label>
                             {isUser?"User Name":"Admin Name"}
                             </Form.Label><br/>
-                            <Form.Control  plaintext readOnly defaultValue={userDet[0].name} disabled class="text-muted" size="lg" />
+                            <Form.Control  plaintext readOnly defaultValue={props.location.state.username} disabled class="text-muted" size="lg" />
                         </Form.Group>
-                    </Col>
+                    </Col> */}
                     <Col>
                         <Form.Group controlId="formId">
                             <Form.Label>
                             {isUser?"User ID":"Admin ID"}
                             </Form.Label><br/>
-                            <Form.Control plaintext readOnly defaultValue={userDet[0].id} disabled class="text-muted" size='lg'/>
+                            <Form.Control plaintext readOnly defaultValue={props.location.state.user} disabled class="text-muted" size='lg'/>
                         </Form.Group>
                     </Col>
                     <Col>
@@ -127,7 +212,7 @@ function Profile(){
                             <Form.Label class="">
                             {isUser?"User Email":"Admin Email"}
                             </Form.Label><br/>
-                            <Form.Control plaintext readOnly defaultValue={userDet[0].email} disabled class="text-muted" size='lg'/>
+                            <Form.Control plaintext readOnly defaultValue={props.location.state.username} disabled class="text-muted" size='lg'/>
                         </Form.Group>
                     </Col>
                 </Row>
@@ -180,7 +265,7 @@ function Profile(){
                     <tr>
                         <th>Project ID</th>
                         <th>Vm ID</th>
-                        <th>Cost</th>
+                        <th>Runtime Cost</th>
                         
                     </tr>
                 </thead>
@@ -195,15 +280,15 @@ function Profile(){
                 <Modal.Title>New Project</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-                <Form >
+                <Form onSubmit={handleAddProj}>
                     <Form.Group controlId="formProjectId" className="mb-4">
                         <Form.Label>Project ID</Form.Label>
-                        <Form.Control type="text" placeholder="Enter Project ID"/>
+                        <Form.Control type="text" name="name" placeholder="Enter Project ID"/>
                         <Form.Text className="text-muted">
                         Project Id muct be Unique
                         </Form.Text>
                     </Form.Group>
-                        <Button className="mr-2 ml-2" variant="primary" onClick={()=>{setProjShow(false);setVP(true);setTimeout(() => {setVP(false)}, 1000);}}>Create Project</Button>
+                        <Button className="mr-2 ml-2" variant="primary" type="submit">Create Project</Button>
                         <Button variant="secondary" onClick={()=>setProjShow(false)}>Close</Button>
                 </Form>
                 </Modal.Body>
@@ -379,4 +464,4 @@ function Profile(){
     )
 }
 
-export default Profile;
+export default withRouter(Profile);

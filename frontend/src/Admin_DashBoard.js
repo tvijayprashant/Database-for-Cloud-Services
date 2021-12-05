@@ -1,6 +1,7 @@
 import React from "react";
 import { Container, Row, Col, Navbar, Nav, NavDropdown, Card, Button,Carousel} from 'react-bootstrap';
 import { Line } from 'react-chartjs-2';
+import { withRouter,useHistory } from "react-router-dom";
 
 const data = {
   labels: ['1', '2', '3', '4', '5', '6'],
@@ -26,34 +27,51 @@ const options = {
 const projId = [{id:132435465},{id:132423425},{id:34546765},{id:98765432},{curr:5674839210,username:"sdfgfh",userid:765432342}];
 const vm = [{name:"asfdgsfg"},{name:"sadfasfg"},{name:"Agnihotri"},{name:"Netradham"},{name:"SunnyDay"}]
 
-export const Admin_DashBoard = () =>(
+function Admin_DashBoard(props){
+    const history=useHistory()
+    const [dataReceived,setDataReceived] = React.useState(true);
+    const [proj,setProj] = React.useState('');
+
+    return(
     <Container fluid>
             <Navbar bg="light" expand="lg" sticky="top">
                 <Navbar.Brand href="/">GCP</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav" />
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
-                    <NavDropdown title="My Projects" id="basic-nav-dropdown">
-                        {projId.slice(0,projId.length-1).map((row,index)=>{return(<NavDropdown.Item href={"/"+row.id}>{row.id}</NavDropdown.Item>)})}
+                    <NavDropdown  title="My Projects" id="basic-nav-dropdown">
+                        {projId.slice(0,projId.length-1).map((row,index)=>{return(<NavDropdown.Item variant="dark" onClick={(e)=>{setProj(e.currentTarget.innerText)}}>{row.id}</NavDropdown.Item>)})}
                         <NavDropdown.Divider />
-                        <NavDropdown.Item href={"/"+projId[projId.length-1].curr}>{projId[projId.length-1].curr}</NavDropdown.Item>
+                        <NavDropdown.Item style={{backgroundColor: 'lightblue',color:'red'}}>{projId[projId.length-1].curr}</NavDropdown.Item>
                     </NavDropdown>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>
         <Row>
             <Nav variant="pills">
-                <Nav.Item>
-                    <Nav.Link active href="/">DashBoard</Nav.Link>
+            <Nav.Item>
+                    <Nav.Link active onClick={()=> history.push({
+    pathname: '/admin',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>DashBoard</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="link-1" href="/profile">Profile</Nav.Link>
+                    <Nav.Link eventKey="profile" onClick={()=> history.push({
+    pathname: '/profile',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Profile</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="link-2" href="/vm">VM Instances</Nav.Link>
+                    <Nav.Link eventKey="vm" onClick={()=> history.push({
+    pathname: '/vm',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>VM Instances</Nav.Link>
                 </Nav.Item>
                 <Nav.Item>
-                    <Nav.Link eventKey="link-3" href="/metrics">Metrics</Nav.Link>
+                    <Nav.Link eventKey="metrics" onClick={()=> history.push({
+    pathname: '/metrics',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Metrics</Nav.Link>
                 </Nav.Item>
             </Nav>
         </Row>
@@ -70,7 +88,10 @@ export const Admin_DashBoard = () =>(
                     <Card.Subtitle className="mb-2 text-muted">{projId[projId.length-1].username}</Card.Subtitle>
                     <Card.Title>User ID</Card.Title>
                     <Card.Subtitle className="mb-2 text-muted">{projId[projId.length-1].userid}</Card.Subtitle>
-                    <Button className="text-center" variant="dark" bg="light" href="/profile">Go to Profile</Button>
+                    <Button className="text-center" variant="dark" bg="light" onClick={()=> history.push({
+    pathname: '/profile',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Go to Profile</Button>
                     </Card.Body>
                 </Card>
             </Col>
@@ -96,7 +117,10 @@ export const Admin_DashBoard = () =>(
                             </Carousel.Item>
                         </Carousel>
                     <br/>
-                    <Button className="text-center" variant="dark" bg="light" href="/metrics">Go to Metrics</Button>
+                    <Button className="text-center" variant="dark" bg="light" onClick={()=> history.push({
+    pathname: '/metrics',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Go to Metrics</Button>
                     </Card.Body>
                 </Card>
             </Col>
@@ -107,7 +131,10 @@ export const Admin_DashBoard = () =>(
                     <Card.Header>VM Instances</Card.Header>
                     <Card.Body>
                     {vm.map((row)=>{return(<Card.Subtitle className="mb-2 text-muted">{row.name}</Card.Subtitle>)})}
-                    <Button className="text-center" variant="dark" bg="light" href="/vm">Go to VM Instances</Button>
+                    <Button className="text-center" variant="dark" bg="light" onClick={()=> history.push({
+    pathname: '/vm',
+    state: {username:props.location.state.username, password:props.location.state.password, user:props.location.state.user} 
+    })}>Go to VM Instances</Button>
                     </Card.Body>
                 </Card>
         </Row>
@@ -156,3 +183,6 @@ export const Admin_DashBoard = () =>(
     </Row>
     </Container>
 )
+}
+
+export default withRouter(Admin_DashBoard);
