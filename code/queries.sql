@@ -21,3 +21,5 @@ select USER_ID,MACHINE FROM VM NATURAL JOIN ACCESS;
 select PROJECT_ID,COUNT(VM_ID) FROM VM WHERE PROJECT_ID in (SELECT PROJECT_ID FROM VM WHERE RACK_ID LIKE '%' || 'blk1' || '%' and VM.ZONE_NAME='us-central-a') GROUP BY PROJECT_ID;
 
 -- Nested Queries
+select sum(gpu_runtime) as gr, sum(cpu_runtime) as cr, sum(gpu_usage) as gu, sum(cpu_usage) as cu, sum(disk_usage) as du, sum(ram_usage) as ru from runtime natural join vm where zone_name='us-central-a' group by time order by time limit 24;
+select cost,sum(cpu_runtime) as cr,sum(gpu_runtime) as gr from monitors natural join runtime where vm_id = (select vm_id from vm where project_id='cdsaml-32445');
