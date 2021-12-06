@@ -3,7 +3,7 @@ const { runtime_insert } = require("./database");
 const Random_insert = function Random_insert(n) {
 	runtime_insert.connect();
 	runtime_insert.query(
-		`select vm_id from VM where status<>'Stopped'`,
+		`select vm_id from VM where status='Stopped'`,
 		(err, vms) => {
 			if (!err) {
 				for (let vm in vms.rows){
@@ -19,7 +19,7 @@ const Random_insert = function Random_insert(n) {
 						if (err) {
 							console.log(err);
 						} else {
-							// console.log(insert_runtime);
+							// console.log(insert_runtime);q
 						}
 					});
 				}
@@ -30,7 +30,7 @@ const Random_insert = function Random_insert(n) {
 			}
 		});
 	runtime_insert.query(
-		`select vm_id from VM where status='Stopped'`,
+		`select vm_id from VM where status='Running'`,
 		(err, vms) => {
 			if (!err) {
 				// console.log(vms.rows[0].vm_id);

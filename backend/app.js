@@ -63,11 +63,11 @@ app.post("/signup", async function (req, res) {
 			let usr_password = "";
 			sign_up.query(
 				`select crypt('${req.password}',gen_salt('bf'))`,
-				async (err, passwd) => {
+				async (err, password) => {
 					if (err) {
 						console.log(err);
 					} else {
-						usr_password = passwd.rows[0].crypt;
+						usr_password = password.rows[0].crypt;
 					}
 					await console.log(usr_password);
 					sign_up.query(
@@ -234,11 +234,11 @@ app.post("/login", function (req, res) {
 				if (result.rows[0].count == 1) {
 					console.log("Checking for Password");
 					// console.log(req);
-					crypt = `crypt('${req.password}', PASSWD)`;
+					crypt = `crypt('${req.password}', passwd)`;
 					const login = create_login_client(req.email, req.password);
 					login.connect();
-					await login.query(
-						`select count(email_id) from USER_ where EMAIL_ID=$1 and PASSWD=${crypt}`,[req.email],
+					login.query(
+						`select count(email_id) from USER_ where EMAIL_ID=$1 and USER_.passwd=${crypt}`,[req.email],
 						async (error, user) => {
 							if (!error) {
 								// console.log(user.rows);
@@ -249,8 +249,10 @@ app.post("/login", function (req, res) {
 										else{
 											// console.log(resp.rows[0]);
 											login.end();
+											// console.log(resp)
 											res.json({
 												authenticated: 1,
+												admin : resp.rows[0].admin,
 												message: "User Authenticated.",
 												user: resp.rows[0]
 											});
@@ -265,6 +267,7 @@ app.post("/login", function (req, res) {
 								}
 							}
 							else{
+								// console.log(error)
 								console.log("2User Login failed!");
 									res.json({
 										authenticated: 0,
@@ -296,11 +299,11 @@ app.post("/project", (req,res) => {
 	// console.log(req);
 	// req = {
 	// 	email: 'vp1@gmail.com',
-	// 	passwd: 'a',
+	// 	password: 'a',
 	// 	user_id:'USR000007'
 	// }
 	req = req.body[0];
-	login = create_login_client(req.email,req.passwd);
+	login = create_login_client(req.email,req.password);
 	login.connect();
 	login.query(`select project_id from worked_on where user_id = $1`,[req.user_id],(err,projects) => {
 		if (err) {
@@ -384,11 +387,11 @@ app.post("/status",function(req,res){
 	// 	vm: 'VM_0000002',
 	// 	status: "Running",
 	// 	email: 'vp1@gmail.com',
-	// 	passwd: 'a',
+	// 	password: 'a',
 	// }
 	req = req.body[0];
 	// console.log(req)
-	login = create_login_client(req.email,req.passwd);
+	login = create_login_client(req.email,req.password);
 	login.connect()
 	login.query(`update vm set status=$1 where vm_id=$2`,[req.status,req.vmId],async (err,update)=>{
 		if(err){
@@ -403,14 +406,14 @@ app.post("/status",function(req,res){
 	});
 })
 
-app.get("/vm_metric", function (req, res) {
-	req={
-		email: 'vp1@gmail.com',
-		passwd: 'a',
-		user_id:'USR000007',
-		vm:'VM_0000002'
-	}
-	login = create_login_client(req.email,req.passwd);
+app.post("/vm_metric", function (req, res) {
+	req = req.body;
+	// req={
+	// 	email: 'vp1@gmail.com',
+	// 	password: 'a',
+	// 	vm:'VM_0000002'
+	// }
+	login = create_login_client(req.email,req.password);
 	login.connect()
 	metrics = {du:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],ru:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],gu:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],cu:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],cr:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],gr:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]};		
 	// console.log(vms.rows[vm].name.toString());
@@ -419,12 +422,12 @@ app.get("/vm_metric", function (req, res) {
 		res.json({metric:metrics});}
 		else{
 			for(row in metric.rows){
-				metrics.du[row] = metric.rows[row].disk_usage;
-				metrics.ru[row] = metric.rows[row].ram_usage;
-				metrics.gu[row] = metric.rows[row].gpu_usage;
-				metrics.cu[row] = metric.rows[row].cpu_usage;
-				metrics.gr[row] = metric.rows[row].gpu_runtime;
-				metrics.cr[row] = metric.rows[row].cpu_runtime;
+				metrics.du[row] = parseFloat(metric.rows[row].disk_usage);
+				metrics.ru[row] = parseFloat(metric.rows[row].ram_usage);
+				metrics.gu[row] = parseFloat(metric.rows[row].gpu_usage);
+				metrics.cu[row] = parseFloat(metric.rows[row].cpu_usage);
+				metrics.gr[row] = parseInt(metric.rows[row].gpu_runtime);
+				metrics.cr[row] = parseInt(metric.rows[row].cpu_runtime);
 			}
 			// await mlist.push(metrics);
 			// console.log(mlist);
@@ -437,28 +440,102 @@ app.get("/vm_metric", function (req, res) {
 	//
 });
 
-app.get("/zone_metric",function(req,res){
+app.post("/project_metric",function(req,res){
 	req={
-		email: 'vp1@gmail.com',
-		passwd: 'a',
-		user_id:'USR000007',
-		vm:'VM_0000002'
+		email: 'vp4@gmail.com',
+		password: 'a',
+		// user_id:'USR000007',
+		project_id:'cdsaml-32445'
 	}
-	sign_up.connect()
-	sign_up.query(`select vm_id from vm where `)
+	login = create_login_client(req.email,req.password);
+	login.connect()
+	metrics = {du:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],ru:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],gu:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],cu:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],cr:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],gr:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
+	login.query(`select sum(gpu_runtime) as gr, sum(cpu_runtime) as cr, sum(gpu_usage) as gu, sum(cpu_usage) as cu, sum(disk_usage) as du, sum(ram_usage) as ru from runtime natural join vm where project_id=$1 group by time order by time limit 24`,[req.project_id],async (err,metric) => {
+		if(err) {console.log(err);
+		res.json({metric:metrics});}
+		else{
+			for(row in metric.rows){
+				metrics.du[row] = parseFloat(metric.rows[row].du);
+				metrics.ru[row] = parseFloat(metric.rows[row].ru);
+				metrics.gu[row] = parseFloat(metric.rows[row].gu);
+				metrics.cu[row] = parseFloat(metric.rows[row].cu);
+				metrics.gr[row] = parseInt(metric.rows[row].gr.hours);
+				metrics.cr[row] = parseInt(metric.rows[row].cr.hours);
+			}
+			// await mlist.push(metrics);
+			// console.log(mlist);
+			// console.log(metrics)
+			res.json({metric:metrics});
+		}
+	})
 })
 
+app.post("/zone_metric",function(req,res){
+	// req={
+	// 	email: 'vp1@gmail.com',
+	// 	password: 'a',
+	// 	// user_id:'USR000007',
+	// 	zone:'us-central-b'
+	// }
+	req = req.body
+	sign_up.connect()
+	metrics = {du:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],ru:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],gu:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],cu:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],cr:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],gr:[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
+	sign_up.query(`select sum(gpu_runtime) as gr, sum(cpu_runtime) as cr, sum(gpu_usage) as gu, sum(cpu_usage) as cu, sum(disk_usage) as du, sum(ram_usage) as ru from runtime natural join vm where zone_name=$1 group by time order by time limit 24`,[req.zone],async (err,metric) => {
+		if(err) {console.log(err);
+		res.json({metric:metrics});}
+		else{
+			for(row in metric.rows){
+				metrics.du[row] = parseFloat(metric.rows[row].du);
+				metrics.ru[row] = parseFloat(metric.rows[row].ru);
+				metrics.gu[row] = parseFloat(metric.rows[row].gu);
+				metrics.cu[row] = parseFloat(metric.rows[row].cu);
+				metrics.gr[row] = parseInt(metric.rows[row].gr.hours);
+				metrics.cr[row] = parseInt(metric.rows[row].cr.hours);
+			}
+			// await mlist.push(metrics);
+			// console.log(mlist);
+			// console.log(metrics)
+			res.json({metric:metrics});
+		}
+	})
+})
+
+
+
+app.post("/project_vm", async function (req, res) {
+	req = req.body[0]
+	// req={
+	// 	email: 'vp4@gmail.com',
+	// 	password: 'a',
+	// 	project_id:'cdsaml-32445',
+	// }
+	login = create_login_client(req.email,req.password);
+	login.connect()
+	await login.query(`select vm_id from vm where project_id=$1`,[req.project_id],async (err,proj) => {
+		if(err){
+			console.log(err);
+			res.json({
+				vms:"Error in SQL statement"
+			});
+		}
+		else{
+			console.log(proj);
+			res.json({proj:proj.rows});
+		}
+		login.end();
+	});
+});
 
 app.post("/vm", async function (req, res) {
 	// req={
 	// 	email: 'vp4@gmail.com',
-	// 	passwd: 'a',
+	// 	password: 'a',
 	// 	user_id:'USR000007',
 	// 	projectID: 'cdsaml-32445' 
 	// }
 	// console.log(req.body);
 	req = req.body;
-	login = create_login_client(req.email,req.passwd);
+	login = create_login_client(req.email,req.password);
 	login.connect()
 	await login.query(`select name,vm_id,zone_name,external_ip,internal_ip,status from worked_on natural join vm where project_id=$1 and user_id=$2`,[req.projectID, req.user_id],async (err,vms) => {
 		if(err){
@@ -475,36 +552,49 @@ app.post("/vm", async function (req, res) {
 	});
 });
 
-app.get("/vms_cost",function(req,res){
-	req={
-		email: 'vp1@gmail.com',
-		passwd: 'a',
-		user_id:'USR000007',
-		// projectID: 'pluck-rarity',
-		vm:'VM_0000002'
-	}
-	login = create_login_client(req.email,req.passwd);
+app.post("/vm_cost",function(req,res){
+	// const tableData = [{id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542}]},
+    //                     {id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542},{name:"sdfsgdfsfva",cost:13}]},
+    //                     {id:12345678,vm:[{name:"sdfsgva",cost:123},{name:"fghd",cost:542}]}]
+	// req={
+	// 	email: 'vp4@gmail.com',
+	// 	password: 'a',
+	// 	user_id:'USR000007',
+	// 	project_id: ['Anthe','Masrk','cdsaml-32445','Majestic'],
+	// 	// vm:'VM_0000002'
+	// }
+	req = req.body
+	// select cost,vm_id,sum(cpu_runtime) as cr, sum(gpu_runtime) as gr from vm natural join monitors natural join runtime where project_id = 'cdsaml-32445' group by vm_id,cost;
+	login = create_login_client(req.email,req.password);
 	login.connect()
-	login.query(`select sum(cpu_runtime) as cr,sum(gpu_runtime) as gr from runtime where vm_id = $1`,[req.vm],async (err,runtime) => {
+	login.query(`select monitors.vm_id,sum(cpu_runtime) as cr,sum(gpu_runtime) as gr,cost,project_id from runtime natural join vm natural join worked_on join monitors on monitors.vm_id = vm.vm_id where user_id = $1 group by monitors.vm_id,cost,project_id`,[req.user_id],async (err,runtime) => {
 		if(err) console.log(err);
 		else{
-			console.log(runtime.rows[0].cr.hours);
-			login.query(`select cost from monitors where vm_id = $1`,[req.vm	],async (err,cost) => {
-				if (err) console.log(err)
-				else{
-					console.log(cost.rows[0].cost);
-					cost = cost.rows[0].cost
-						.substring(1, cost.rows[0].cost.length - 1)
-						.split(",")
-						.map(function (item) {[0]
-							return parseInt(item);
-						});
-					console.log([runtime.rows[0].cr.hours * cost[0], runtime.rows[0].gr.hours * cost[1]])
-					res.json({
-						cost:[runtime.rows[0].cr.hours * cost[0], runtime.rows[0].gr.hours * cost[1]]
-					})
+			console.log(runtime.rows)
+			list = []
+			for (proj in req.project_id){
+				list.push({id: req.project_id[proj], vm:[]})
+			}
+			for (row in runtime.rows){
+				let cost = runtime.rows[row].cost
+				.substring(1, runtime.rows[row].cost.length - 1)
+				.split(",")
+				.map(function (item) {
+					return parseFloat(item);
+				});
+				// console.log(cost)
+				console.log([runtime.rows[row].cr.hours *  cost[0], runtime.rows[row].gr.hours *  cost[1]])
+				for (i in list)
+				{
+					if(list[i].id == runtime.rows[row].project_id)
+					{
+						list[i].vm.push({'name':runtime.rows[row].vm_id,cost:runtime.rows[row].cr.hours * cost[0] + runtime.rows[row].gr.hours * cost[1]})
+					}
 				}
-			});
+			}
+			res.json({
+				 list:list
+			})
 		}
 	})
 	// console.log(clist)	
@@ -624,9 +714,10 @@ app.post("/vm/details", function(req,res){
 	});
 })
 
-app.post("/vm/quotas", function(req,res){
+app.post("/vm/quotas", function(req,resp){
 	console.log(req.body);
 	req = req.body;
+	// req = {email: 'vp4@gmail.com', password: 'a', projectID:'cdsaml-32445'}
 	login = create_login_client(req.email, req.password);
 	login.connect();
 	login.query(`select quotas from project where project_id=$1`,[req.projectID], async (err,quota)=>{
@@ -634,19 +725,40 @@ app.post("/vm/quotas", function(req,res){
 			console.log(err);
 		}
 		else{
-			console.log(quota.rows[0]);
+			// console.log('hello')
+			// const quotas = [{nvm:5, disk:[2,3,4], gpuP:[1,1,1,1,1], gpu:[1,1,1,1,1],mfP:[2,2,2,2,2], mf:[0,0,2,2,2]},
+            //         {nvm:15, disk:[2,3,5], gpuP:[1,2,3,4,5], gpu:[1,1,2,1,1],mfP:[2,0,2,2,2], mf:[2,2,2,4,2]},
+            //         {nvm:52, disk:[0,0,0], gpuP:[1,1,0,10,0], gpu:[1,2,1,1,1],mfP:[2,2,0,2,2], mf:[8,2,2,2,2]},
+            //         {nvm:2, disk:[4,3,4], gpuP:[1,0,1,0,1], gpu:[1,1,11,3,1],mfP:[2,2,0,20,2], mf:[2,8,2,7,2]}]
 			let quotas = quota.rows[0].quotas;
-			quotas = quotas.split(`""`);
-			quotas = quotas.splice(quotas.length-1);
-			for (let i=0;i<quotas.length;i++){
-				if(quotas[i][quotas[i].length-1] == ',' && quotas[i].length!=1){
-					quotas[i] = `${quotas[i][quotas[i].length-2]}`;
-				}
-				else{
-					quotas[i] = quotas[i];
-				}
-			}
 			console.log(quotas);
+			quotas = quotas.substring(3, quotas.length - 4)
+												.split('")","(')
+												.map(function (item) {
+													// console.log(item)
+													res = []
+													res.push( parseInt(item[0]))
+													item.substring(4, item.length -1)
+													.split('"",""')
+													.map((i2) => {
+														// console.log(i2)
+														res2 = []
+														i2 = i2.substring(1,i2.length - 1)
+														.split(',')
+														.map((i3)=>{
+															
+															return parseInt(i3)
+														});
+														// console.log(i2)
+														res.push(i2)
+													});
+													// console.log(res)
+													return {nvm:res[0],gpuP:res[1],gpu:res[2],disk:res[3],mfP:res[4],mf:res[5]};
+												});
+
+			console.log('sent quotas');
+			// console.log(quotas);
+			resp.json({quotas : quotas})
 		}
 		await login.end();
 	})
