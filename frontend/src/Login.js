@@ -23,7 +23,7 @@ function Login(){
             .then((response) => {
                     msg = response.data;
                     console.log(response.data)
-                    let props = { username:data[0].email, password: data[0].password, user:response.data['user'].user_id}
+                    let props = { username:data[0].email, password: data[0].password, user:response.data['user'].user_id, admin:response.data['admin']}
                     if(response.data['authenticated']){
                         history.push({
                             pathname: '/dashboard',
